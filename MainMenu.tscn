@@ -1,0 +1,49 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://MainMenu.gd" type="Script" id=1]
+
+[node name="Main Menu" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label" type="Label" parent="."]
+anchor_left = 0.5
+anchor_right = 0.5
+margin_left = -58.5
+margin_top = 64.0
+margin_right = 58.5
+margin_bottom = 14.0
+text = "My Little Roguelike"
+align = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="CenterContainer" type="CenterContainer" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="VBoxContainer2" type="VBoxContainer" parent="CenterContainer"]
+margin_left = 194.0
+margin_top = 158.0
+margin_right = 286.0
+margin_bottom = 202.0
+
+[node name="New Game" type="Button" parent="CenterContainer/VBoxContainer2"]
+margin_right = 92.0
+margin_bottom = 20.0
+text = " NEW GAME "
+
+[node name="Quit" type="Button" parent="CenterContainer/VBoxContainer2"]
+margin_top = 24.0
+margin_right = 92.0
+margin_bottom = 44.0
+text = "QUIT"
+[connection signal="pressed" from="CenterContainer/VBoxContainer2/Quit" to="." method="_on_Quit_pressed"]
