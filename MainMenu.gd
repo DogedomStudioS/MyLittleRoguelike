@@ -8,4 +8,4 @@ func _on_Quit_pressed():
 
 
 func _on_New_Game_pressed():
-	get_tree().change_scene("res://assets/tilesets/World.tscn")
+	get_tree().change_scene("res://level/World.tscn")
