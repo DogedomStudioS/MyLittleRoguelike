@@ -24,7 +24,7 @@ func _ready():
 	make_rooms()
 
 func make_rooms():
-	for i in range(num_rooms):
+	for _i in range(num_rooms):
 		var pos = Vector2(rand_range(-h_spread, h_spread), 0)
 		var r = Room.instance()
 		var w = min_size + randi() % (max_size - min_size)
@@ -95,15 +95,14 @@ func make_map():
 	full_rect = full_rect.grow(tile_size)
 	var topleft = Map.world_to_map(full_rect.position)
 	var bottomright = Map.world_to_map(full_rect.end)
-	for x in range(topleft.x, bottomright.x + 1):
-		for y in range(topleft.y, bottomright.y + 1):
+	for x in range(topleft.x, bottomright.x):
+		for y in range(topleft.y, bottomright.y):
 			Map.set_cell(x, y, 1)
 	
 	# Carve rooms
 	var corridors = []
 	for room in $Rooms.get_children():
 		var s = (room.size / tile_size).floor()
-		var pos = Map.world_to_map(room.position)
 		var ul = (room.position / tile_size).floor() - s
 		for x in range(0, s.x * 2):
 			for y in range(0, s.y * 2):
