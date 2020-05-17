@@ -46,7 +46,7 @@ func update_visibility(from: Vector2):
 				rays.append([tile_position, collision.position])
 			if collision and collision.collider.name == 'Player Eyes':
 				#hits.append(tile_position)
-				if level_map.get_cellv(world_to_map(tile_position)) == 2 and tile_position.distance_to(from) > 32:
+				if level_map.get_cellv(world_to_map(tile_position)) == 2 and tile_position.distance_to(from) > 45:
 					set_cellv(world_to_map(tile_position), 0)
 				else:
 					set_cellv(world_to_map(tile_position), -1)

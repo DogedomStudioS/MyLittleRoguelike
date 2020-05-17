@@ -14,6 +14,10 @@ var max_size = 8
 var h_spread = 100
 var cull = 0.25
 var door_candidates = []
+var tile_rooms = 47
+var tile_empty = 49
+var tile_threshold = 50
+var tile_corridor = 51
 
 var path
 var start_room = null
@@ -97,7 +101,7 @@ func make_map():
 	var bottomright = Map.world_to_map(full_rect.end)
 	for x in range(topleft.x, bottomright.x):
 		for y in range(topleft.y, bottomright.y):
-			Map.set_cell(x, y, 1)
+			Map.set_cell(x, y, tile_empty)
 	
 	# Carve rooms
 	var corridors = []
@@ -106,7 +110,7 @@ func make_map():
 		var ul = (room.position / tile_size).floor() - s
 		for x in range(0, s.x * 2):
 			for y in range(0, s.y * 2):
-				Map.set_cell(ul.x + x, ul.y + y, 0)
+				Map.set_cell(ul.x + x, ul.y + y, tile_rooms)
 		# Carve connecting corridor
 		var p = path.get_closest_point(room.position)
 		for conn in path.get_point_connections(p):
@@ -117,6 +121,7 @@ func make_map():
 													path.get_point_position(conn).y))
 				carve_path(start, end)
 		corridors.append(p)
+	Map.update_bitmask_region(topleft, bottomright)
 	for door in door_candidates:
 		# N, E, S, W
 		var neighbors = [
@@ -138,7 +143,7 @@ func make_map():
 			else:
 				valid_walls = neighbors[0] == 1 or neighbors[2] == 1
 			if valid_walls:
-				Map.set_cell(door.x, door.y, 3)
+				Map.set_cell(door.x, door.y, tile_threshold)
 	$Player.position = start_room.position
 	$Camera.position = $Player.position
 
@@ -154,10 +159,13 @@ func carve_path(pos1, pos2):
 	if (randi() % 2) > 0:
 		x_y = pos2
 		y_x = pos1
+	var last_cell
 	for x in range(pos1.x, pos2.x, x_diff):
 		var cell = Map.get_cell(x, x_y.y)
-		if cell == 1:
-			Map.set_cell(x, x_y.y, 2)
+		if not last_cell:
+			last_cell = cell
+		if cell == tile_empty or last_cell == tile_empty:
+			Map.set_cell(x, x_y.y, tile_corridor)
 			var solid_neighbors = false
 			var floor_neighbors = false
 			if Map.get_cell(x, x_y.y - 1) == 1 and Map.get_cell(x, x_y.y + 1) == 1:
@@ -168,10 +176,11 @@ func carve_path(pos1, pos2):
 				floor_neighbors = true
 			if solid_neighbors and floor_neighbors:
 				door_candidates.append(Vector2(x, x_y.y))
+		last_cell = cell
 	for y in range(pos1.y, pos2.y, y_diff):
 		var cell = Map.get_cell(y_x.x, y)
-		if cell == 1:
-			Map.set_cell(y_x.x, y, 2)
+		if cell == tile_empty:
+			Map.set_cell(y_x.x, y, tile_corridor)
 			var solid_neighbors = false
 			var floor_neighbors = false
 			if Map.get_cell(y_x.x - 1, y) == 1 and Map.get_cell(y_x.x + 1, y) == 1:

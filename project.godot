@@ -21,9 +21,10 @@ config/icon="res://icon.png"
 
 [display]
 
-window/size/width=960
-window/size/height=720
+window/size/width=1280
+window/size/height=800
 window/size/fullscreen=true
+window/dpi/allow_hidpi=true
 window/stretch/mode="viewport"
 window/stretch/aspect="keep_height"
 
@@ -79,5 +80,6 @@ quality/intended_usage/framebuffer_allocation.mobile=1
 quality/2d/use_pixel_snap=true
 vram_compression/import_etc=true
 vram_compression/import_etc2=false
+quality/filters/use_nearest_mipmap_filter=true
 environment/default_clear_color=Color( 0, 0, 0, 1 )
 environment/default_environment="res://default_env.tres"

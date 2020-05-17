@@ -1,0 +1,29 @@
+[gd_resource type="TileSet" load_steps=2 format=2]
+
+[sub_resource type="StreamTexture" id=1]
+load_path = "res://.import/tileset_color_blocks.png-a437e245e6bc9c600eef85c4d3b6270b.stex"
+
+[resource]
+0/name = "tileset_color_blocks.png 0"
+0/texture = SubResource( 1 )
+0/tex_offset = Vector2( 0, 0 )
+0/modulate = Color( 1, 1, 1, 1 )
+0/region = Rect2( 0, 0, 160, 128 )
+0/tile_mode = 1
+0/autotile/bitmask_mode = 1
+0/autotile/bitmask_flags = [ Vector2( 0, 2 ), 32, Vector2( 2, 0 ), 128, Vector2( 2, 1 ), 495, Vector2( 2, 3 ), 2, Vector2( 3, 1 ), 8 ]
+0/autotile/icon_coordinate = Vector2( 0, 0 )
+0/autotile/tile_size = Vector2( 32, 32 )
+0/autotile/spacing = 0
+0/autotile/occluder_map = [  ]
+0/autotile/navpoly_map = [  ]
+0/autotile/priority_map = [  ]
+0/autotile/z_index_map = [  ]
+0/occluder_offset = Vector2( 0, 0 )
+0/navigation_offset = Vector2( 0, 0 )
+0/shape_offset = Vector2( 0, 0 )
+0/shape_transform = Transform2D( 1, 0, 0, 1, 0, 0 )
+0/shape_one_way = false
+0/shape_one_way_margin = 0.0
+0/shapes = [  ]
+0/z_index = 0
