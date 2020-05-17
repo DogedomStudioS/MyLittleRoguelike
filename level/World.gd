@@ -15,7 +15,7 @@ var h_spread = 100
 var cull = 0.25
 var door_candidates = []
 var tile_rooms = 47
-var tile_empty = 49
+var tile_empty = 52
 var tile_threshold = 50
 var tile_corridor = 51
 
@@ -146,8 +146,8 @@ func make_map():
 				valid_walls = neighbors[0] == 1 or neighbors[2] == 1
 			if valid_walls:
 				Map.set_cell(door.x, door.y, tile_threshold)
-	$Player.position = start_room.position
-	$Camera.position = $Player.position
+	$TileMap/Player.position = start_room.position
+	$Camera.position = $TileMap/Player.position
 
 func carve_path(pos1, pos2):
 	# Carve a path between two points
