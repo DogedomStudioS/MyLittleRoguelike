@@ -111,6 +111,7 @@ func make_map():
 		for x in range(0, s.x * 2):
 			for y in range(0, s.y * 2):
 				Map.set_cell(ul.x + x, ul.y + y, tile_rooms)
+		Map.update_bitmask_region(ul, Vector2(ul.x + (s.x * 2), ul.y + (s.y * 2)))
 		# Carve connecting corridor
 		var p = path.get_closest_point(room.position)
 		for conn in path.get_point_connections(p):
@@ -121,7 +122,6 @@ func make_map():
 													path.get_point_position(conn).y))
 				carve_path(start, end)
 		corridors.append(p)
-	Map.update_bitmask_region(topleft, bottomright)
 	for door in door_candidates:
 		# N, E, S, W
 		var neighbors = [
@@ -130,6 +130,7 @@ func make_map():
 			Map.get_cell(door.x, door.y + 1),
 			Map.get_cell(door.x - 1, door.y)
 		]
+		Map.set_cell(door.x, door.y, tile_threshold)
 		# first check for exactly one floor neighbor
 		var floor_neighbors = 0
 		var valid_walls = false
@@ -164,31 +165,13 @@ func carve_path(pos1, pos2):
 		var cell = Map.get_cell(x, x_y.y)
 		if not last_cell:
 			last_cell = cell
-		if cell == tile_empty or last_cell == tile_empty:
+		if cell == tile_empty or Map.get_cell_autotile_coord(x, x_y.y) != Vector2(1, 1):
 			Map.set_cell(x, x_y.y, tile_corridor)
-			var solid_neighbors = false
-			var floor_neighbors = false
-			if Map.get_cell(x, x_y.y - 1) == 1 and Map.get_cell(x, x_y.y + 1) == 1:
-				solid_neighbors = true
-			var left_neighbor = Map.get_cell(x - 1, x_y.y)
-			var right_neighbor = Map.get_cell(x + 1, x_y.y)
-			if left_neighbor == 0 or right_neighbor == 0:
-				floor_neighbors = true
-			if solid_neighbors and floor_neighbors:
-				door_candidates.append(Vector2(x, x_y.y))
 		last_cell = cell
 	for y in range(pos1.y, pos2.y, y_diff):
 		var cell = Map.get_cell(y_x.x, y)
-		if cell == tile_empty:
+		if cell == tile_empty or Map.get_cell_autotile_coord(y_x.x, y) != Vector2(1, 1):
 			Map.set_cell(y_x.x, y, tile_corridor)
-			var solid_neighbors = false
-			var floor_neighbors = false
-			if Map.get_cell(y_x.x - 1, y) == 1 and Map.get_cell(y_x.x + 1, y) == 1:
-				solid_neighbors = true
-			var north_neighbor = Map.get_cell(y_x.x, y - 1)
-			var south_neighbor = Map.get_cell(y_x.x, y + 1)
-			if north_neighbor == 0 or south_neighbor == 0:
-				door_candidates.append(Vector2(y_x.x, y))
 	
 func find_start_room():
 	var rooms = $Rooms.get_children()
