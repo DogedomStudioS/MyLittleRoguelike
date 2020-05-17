@@ -111,7 +111,6 @@ func make_map():
 		for x in range(0, s.x * 2):
 			for y in range(0, s.y * 2):
 				Map.set_cell(ul.x + x, ul.y + y, tile_rooms)
-		Map.update_bitmask_region(ul, Vector2(ul.x + (s.x * 2), ul.y + (s.y * 2)))
 		# Carve connecting corridor
 		var p = path.get_closest_point(room.position)
 		for conn in path.get_point_connections(p):
@@ -122,7 +121,9 @@ func make_map():
 													path.get_point_position(conn).y))
 				carve_path(start, end)
 		corridors.append(p)
+	Map.update_bitmask_region(topleft, bottomright)
 	for door in door_candidates:
+		pass
 		# N, E, S, W
 		var neighbors = [
 			Map.get_cell(door.x, door.y - 1),
@@ -166,12 +167,12 @@ func carve_path(pos1, pos2):
 		if not last_cell:
 			last_cell = cell
 		if cell == tile_empty or Map.get_cell_autotile_coord(x, x_y.y) != Vector2(1, 1):
-			Map.set_cell(x, x_y.y, tile_corridor)
+			Map.set_cell(x, x_y.y, tile_rooms)
 		last_cell = cell
 	for y in range(pos1.y, pos2.y, y_diff):
 		var cell = Map.get_cell(y_x.x, y)
 		if cell == tile_empty or Map.get_cell_autotile_coord(y_x.x, y) != Vector2(1, 1):
-			Map.set_cell(y_x.x, y, tile_corridor)
+			Map.set_cell(y_x.x, y, tile_rooms)
 	
 func find_start_room():
 	var rooms = $Rooms.get_children()
