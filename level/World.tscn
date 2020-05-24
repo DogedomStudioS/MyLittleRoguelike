@@ -21,7 +21,9 @@ script = ExtResource( 3 )
 
 [node name="Rooms" type="Node" parent="."]
 
-[node name="TileMap" type="TileMap" parent="."]
+[node name="Navigation2D" type="Navigation2D" parent="."]
+
+[node name="TileMap" type="TileMap" parent="Navigation2D"]
 show_behind_parent = true
 tile_set = ExtResource( 2 )
 cell_size = Vector2( 32, 32 )
@@ -31,7 +33,7 @@ __meta__ = {
 "_edit_lock_": true
 }
 
-[node name="Player" parent="TileMap" instance=ExtResource( 4 )]
+[node name="Player" parent="Navigation2D/TileMap" instance=ExtResource( 4 )]
 collision_layer = 2
 
 [node name="Camera" type="Camera2D" parent="."]

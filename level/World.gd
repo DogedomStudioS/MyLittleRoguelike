@@ -2,7 +2,8 @@ extends Node2D
 
 var Room = preload("res://level/Room.tscn")
 var font = preload("res://assets/RobotoBold120.tres")
-onready var Map = $TileMap
+onready var Map = $Navigation2D/TileMap
+onready var Player = $Navigation2D/TileMap/Player
 
 var debug_draw = false
 var debug_map_generation = false
@@ -146,8 +147,8 @@ func make_map():
 				valid_walls = neighbors[0] == 1 or neighbors[2] == 1
 			if valid_walls:
 				Map.set_cell(door.x, door.y, tile_threshold)
-	$TileMap/Player.position = start_room.position
-	$Camera.position = $TileMap/Player.position
+	Player.position = start_room.position
+	$Camera.position = Player.position
 
 func carve_path(pos1, pos2):
 	# Carve a path between two points

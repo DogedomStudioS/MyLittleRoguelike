@@ -1,7 +1,7 @@
 extends TileMap
 
-onready var level_map: TileMap = $"../TileMap"
-onready var player = $"../TileMap/Player"
+onready var level_map: TileMap = $"../Navigation2D/TileMap"
+onready var player = $"../Navigation2D/TileMap/Player"
 
 var sight_radius = 12
 var space_state

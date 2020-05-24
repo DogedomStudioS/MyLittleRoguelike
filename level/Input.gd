@@ -1,6 +1,6 @@
 extends Node
 
-onready var current_player: KinematicBody2D = $"../TileMap/Player"
+onready var current_player: KinematicBody2D = $"../Navigation2D/TileMap/Player"
 onready var camera: Camera2D = $"../Camera"
 
 var speed = 200.0
