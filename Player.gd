@@ -4,6 +4,7 @@ var tile_mover = preload("./actions/tile_mover.gd").new()
 
 func _ready():
   tile_mover.host = self
+  tile_mover.tween = $Tween
   tile_mover.north_collider = $collider_north
   tile_mover.east_collider = $collider_east
   tile_mover.south_collider = $collider_south

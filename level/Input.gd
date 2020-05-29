@@ -17,14 +17,14 @@ func _physics_process(delta):
     direction = 'right'
   if Input.is_action_just_pressed("move_west"):
     direction = 'left'
-    
+  
   if current_player and direction:
-    #current_player.move_and_slide(velocity.normalized() * speed)
+  #current_player.move_and_slide(velocity.normalized() * speed)
     current_player.handle_order({
       'type': 'move',
       'payload': direction
     })
-    camera.position = current_player.position
+  camera.position = current_player.position
 
 func _input(event):
   pass

@@ -39,3 +39,5 @@ position = Vector2( -8, 0 )
 enabled = true
 cast_to = Vector2( -8, 0 )
 collide_with_areas = true
+
+[node name="Tween" type="Tween" parent="."]
