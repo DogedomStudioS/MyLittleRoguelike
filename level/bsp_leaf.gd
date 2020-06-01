@@ -27,6 +27,8 @@ func split(iterations = 1, minimum_size = Vector2(1, 1), variance = 3.0):
     
     # Create two new leaves and add them to children.
     # Set parent as self.
-    # The first has a bounds of x to the split, the second has a bounds of the split + 1 to x + width. Height is handled oppositely (y to split -1, split to y + height).
+    # The first has a bounds of x to the split, the second has a bounds of the split + 1 to x + width.
+    # Height is handled oppositely (y to split -1, split to y + height).
     
+
     # Call new leaf nodes' split(iterations -1)
