@@ -6,7 +6,7 @@ onready var camera: Camera2D = $"../Camera"
 var speed = 200.0
 var velocity = Vector2(0, 0)
 
-func _physics_process(delta):
+func _physics_process(_delta):
   var direction = null
   velocity = Vector2(0, 0)
   if Input.is_action_just_pressed("move_north"):
@@ -19,12 +19,9 @@ func _physics_process(delta):
     direction = 'left'
   
   if current_player and direction:
-  #current_player.move_and_slide(velocity.normalized() * speed)
-    current_player.handle_order({
+    Scheduler.submit(current_player, {
       'type': 'move',
-      'payload': direction
+      'payload': direction,
+      'player': true
     })
-  camera.position = current_player.position
-
-func _input(event):
-  pass
+  camera.position = current_player.get_node("Sprite").global_position

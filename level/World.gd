@@ -4,6 +4,7 @@ var Room = preload("res://level/Room.tscn")
 var font = preload("res://assets/RobotoBold120.tres")
 onready var Map = $Navigation2D/TileMap
 onready var Player = $Navigation2D/TileMap/Player
+var Creature = preload("../actors/Creature.tscn")
 
 var debug_draw = false
 var debug_map_generation = false
@@ -25,6 +26,7 @@ var start_room = null
 var end_room = null
 
 func _ready():
+  Map.claimed_move_targets = []
   randomize()
   make_rooms()
 
@@ -148,6 +150,12 @@ func make_map():
       if valid_walls:
         Map.set_cell(door.x, door.y, tile_threshold)
   Player.position = start_room.position.snapped(Vector2.ONE * tile_size) + Vector2(tile_size / 2, tile_size / 2)
+  for _i in range(200):
+    var tile = Vector2(randi() % int(bottomright.x), randi() % int(bottomright.y))
+    if Map.get_cell(tile.x, tile.y) == tile_rooms:
+      var new_creature = Creature.instance()
+      Map.add_child(new_creature)
+      new_creature.position = Map.map_to_world(tile).snapped(Vector2.ONE * tile_size) + Vector2(tile_size / 2, tile_size / 2)
   $Camera.position = Player.position
   for room in $Rooms.get_children():
     room.queue_free()

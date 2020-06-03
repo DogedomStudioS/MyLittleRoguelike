@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=2]
+[gd_scene load_steps=9 format=2]
 
 [ext_resource path="res://level/World.gd" type="Script" id=1]
 [ext_resource path="res://assets/tilesets/tileset_color_blocks.tres" type="TileSet" id=2]
@@ -6,6 +6,7 @@
 [ext_resource path="res://Player.tscn" type="PackedScene" id=4]
 [ext_resource path="res://assets/tilesets/fog_of_war.tres" type="TileSet" id=5]
 [ext_resource path="res://visibility.gd" type="Script" id=6]
+[ext_resource path="res://level/LevelMap.gd" type="Script" id=7]
 
 [sub_resource type="RectangleShape2D" id=1]
 extents = Vector2( 17, 17 )
@@ -29,12 +30,12 @@ tile_set = ExtResource( 2 )
 cell_size = Vector2( 32, 32 )
 cell_custom_transform = Transform2D( 0, 0, 0, 0, 0, 0 )
 format = 1
+script = ExtResource( 7 )
 __meta__ = {
 "_edit_lock_": true
 }
 
 [node name="Player" parent="Navigation2D/TileMap" instance=ExtResource( 4 )]
-collision_layer = 2
 
 [node name="Camera" type="Camera2D" parent="."]
 current = true

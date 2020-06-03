@@ -1,6 +1,8 @@
 extends KinematicBody2D
 
 var tile_mover = preload("./actions/tile_mover.gd").new()
+const base_action_speed = 1.0
+var modified_action_speed = 1.0
 
 func _ready():
   tile_mover.host = self
@@ -10,9 +12,9 @@ func _ready():
   tile_mover.south_collider = $collider_south
   tile_mover.west_collider = $collider_west
 
-func handle_order(order):
-  if !("type" in order):
+func handle_action(action):
+  if !("type" in action):
     pass
-  match order.type:
+  match action.type:
     "move":
-      tile_mover.move(order.payload)
+      tile_mover.move(action.payload)

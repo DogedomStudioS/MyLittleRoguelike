@@ -19,6 +19,10 @@ config/name="My Little Roguelike"
 run/main_scene="res://MainMenu.tscn"
 config/icon="res://icon.png"
 
+[autoload]
+
+Scheduler="*res://actions/scheduler.gd"
+
 [display]
 
 window/size/width=1280
