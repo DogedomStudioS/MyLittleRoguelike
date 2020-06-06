@@ -1,6 +1,7 @@
 extends Node
 
 onready var current_player: KinematicBody2D = $"../Navigation2D/TileMap/Player"
+onready var map = $"../Navigation2D/TileMap"
 onready var camera: Camera2D = $"../Camera"
 
 var speed = 200.0
@@ -19,6 +20,20 @@ func _physics_process(_delta):
     direction = 'left'
   
   if current_player and direction:
+    var world_position = map.world_to_map(current_player.position)
+    var destination = world_position + Constants.directions[direction]
+    var tile_contents = map.get_tile_contents(destination)
+    for node in tile_contents:
+      if is_instance_valid(node) and node.is_in_group(Constants.GROUPS.HOSTILES):
+        Scheduler.submit(current_player, {
+          'type': 'attack',
+          'payload': {
+            'target': node,
+            'direction': direction
+          },
+          'player': true
+        })
+        return
     Scheduler.submit(current_player, {
       'type': 'move',
       'payload': direction,

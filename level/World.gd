@@ -150,13 +150,15 @@ func make_map():
       if valid_walls:
         Map.set_cell(door.x, door.y, tile_threshold)
   Player.position = start_room.position.snapped(Vector2.ONE * tile_size) + Vector2(tile_size / 2, tile_size / 2)
+  Map.add_to_tile(Player, Map.world_to_map(Player.position))
+  $Camera.position = Player.position
   for _i in range(200):
     var tile = Vector2(randi() % int(bottomright.x), randi() % int(bottomright.y))
     if Map.get_cell(tile.x, tile.y) == tile_rooms:
       var new_creature = Creature.instance()
       Map.add_child(new_creature)
       new_creature.position = Map.map_to_world(tile).snapped(Vector2.ONE * tile_size) + Vector2(tile_size / 2, tile_size / 2)
-  $Camera.position = Player.position
+      Map.add_to_tile(new_creature, Map.world_to_map(new_creature.position))
   for room in $Rooms.get_children():
     room.queue_free()
 

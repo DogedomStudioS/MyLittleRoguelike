@@ -6,7 +6,8 @@ var order_completion_handlers = []
 var game_time = 0.0
 
 const order_times = {
-    "move": 100
+    "move": 100,
+    "attack": 75
 }
 
 func submit(target, action):
@@ -16,7 +17,6 @@ func submit(target, action):
   if "player" in action and action.player == true:
     handle_orders(order_time)
     game_time += order_time / 100.0
-    print(game_time)
 
 func handle_orders(time):
   var in_progress_orders = []
@@ -32,5 +32,6 @@ func handle_orders(time):
 
 func _physics_process(_delta):
   for order in resolvable_orders:
-    order.target.handle_action(order.action)
+    if is_instance_valid(order.target):
+      order.target.handle_action(order.action)
   resolvable_orders = []

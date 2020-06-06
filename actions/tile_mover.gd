@@ -23,7 +23,6 @@ func _tween_timeout(_object, _key):
       Scheduler.submit(host, { "type": "move", "payload": moves_queue[0], "player": true })
     moves_queue.pop_front()
 
-
 func move_tween():
   #if not tween_connected:
   #  tween_connected = true
@@ -66,6 +65,8 @@ func move(direction: String):
   # right now we assume direction is one of Vector2.LEFT, Vector2.RIGHT etc.
   var previous_position = host.position
   host.position = destination
+  map.remove_from_tile(host, map.world_to_map(previous_position))
   host.get_node("Sprite").position -= Constants.directions[direction] * tile_size
+  map.add_to_tile(host, map.world_to_map(destination), map.world_to_map(previous_position))
   moving = false
   move_tween()

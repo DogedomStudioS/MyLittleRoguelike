@@ -7,7 +7,7 @@ var directions = ["up", "left", "down", "right"]
 
 func _ready():
   if not tile_mover:
-    print("behavior 'wander' can only apply to scenes implementing tile_mover.")
+    print("behavior 'wander' can only apply to entities implementing tile_mover.")
     return
   initialized = true
 

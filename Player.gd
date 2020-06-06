@@ -2,10 +2,15 @@ extends KinematicBody2D
 
 onready var mortality = $mortality
 onready var tile_mover = $tile_mover
+onready var attack = $attack
+onready var tween = $Tween
 const base_action_speed = 1.0
 var modified_action_speed = 1.0
 
 func _ready():
+  add_to_group(Constants.GROUPS.PLAYER)
+  attack.host = self
+  mortality.host = self
   mortality.hitpoints = 20
   tile_mover.host = self
   tile_mover.tween = $Tween
@@ -20,3 +25,5 @@ func handle_action(action):
   match action.type:
     "move":
       tile_mover.move(action.payload)
+    "attack":
+      attack.attack(action.payload)
