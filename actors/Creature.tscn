@@ -1,9 +1,10 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=7 format=2]
 
 [ext_resource path="res://assets/sprites/creature.png" type="Texture" id=1]
 [ext_resource path="res://actors/creature.gd" type="Script" id=2]
 [ext_resource path="res://actions/tile_mover.gd" type="Script" id=3]
 [ext_resource path="res://actions/behaviors/wander.gd" type="Script" id=4]
+[ext_resource path="res://actions/mortality.gd" type="Script" id=5]
 
 [sub_resource type="RectangleShape2D" id=1]
 extents = Vector2( 16, 16 )
@@ -54,3 +55,6 @@ script = ExtResource( 3 )
 
 [node name="wander" type="Node" parent="."]
 script = ExtResource( 4 )
+
+[node name="mortality" type="Node" parent="."]
+script = ExtResource( 5 )

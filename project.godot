@@ -22,6 +22,9 @@ config/icon="res://icon.png"
 [autoload]
 
 Scheduler="*res://actions/scheduler.gd"
+Random="*res://Random.gd"
+Constants="*res://Constants.gd"
+Game="*res://Game.gd"
 
 [display]
 

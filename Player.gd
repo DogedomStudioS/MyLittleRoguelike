@@ -1,10 +1,12 @@
 extends KinematicBody2D
 
-var tile_mover = preload("./actions/tile_mover.gd").new()
+onready var mortality = $mortality
+onready var tile_mover = $tile_mover
 const base_action_speed = 1.0
 var modified_action_speed = 1.0
 
 func _ready():
+  mortality.hitpoints = 20
   tile_mover.host = self
   tile_mover.tween = $Tween
   tile_mover.north_collider = $collider_north

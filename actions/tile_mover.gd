@@ -16,13 +16,6 @@ var destination_index = -1
 
 var tween_speed = 5
 
-var directions = {
-  "up": Vector2.UP,
-  "right": Vector2.RIGHT,
-  "down": Vector2.DOWN,
-  "left": Vector2.LEFT
-}
-
 func _tween_timeout(_object, _key):
   moving = false
   if moves_queue.size() > 0:
@@ -63,7 +56,7 @@ func move(direction: String):
     return
   if not map and host.get_parent().get_class() == 'TileMap':
     map = host.get_parent()
-  var destination = host.position + directions[direction] * tile_size
+  var destination = host.position + Constants.directions[direction] * tile_size
   var blocked = check_blocked(direction) or destination in map.claimed_move_targets
   if blocked:
     return
@@ -73,6 +66,6 @@ func move(direction: String):
   # right now we assume direction is one of Vector2.LEFT, Vector2.RIGHT etc.
   var previous_position = host.position
   host.position = destination
-  host.get_node("Sprite").position -= directions[direction] * tile_size
+  host.get_node("Sprite").position -= Constants.directions[direction] * tile_size
   moving = false
   move_tween()
