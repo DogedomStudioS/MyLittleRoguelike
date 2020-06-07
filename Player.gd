@@ -3,12 +3,19 @@ extends KinematicBody2D
 onready var mortality = $mortality
 onready var tile_mover = $tile_mover
 onready var attack = $attack
+onready var inventory = $inventory
 onready var tween = $Tween
 const base_action_speed = 1.0
 var modified_action_speed = 1.0
+var is_player = true
+var nice_name = "You"
+var directional_animation = true
+var move_animation = "bounces"
 
 func _ready():
   add_to_group(Constants.GROUPS.PLAYER)
+  inventory.host = self
+  inventory.add(Items.weapons.club)
   attack.host = self
   mortality.host = self
   mortality.hitpoints = 20
@@ -26,4 +33,6 @@ func handle_action(action):
     "move":
       tile_mover.move(action.payload)
     "attack":
-      attack.attack(action.payload)
+      attack.attack(action.payload, true)
+    "wield":
+      attack.arm_weapon(action.payload, true)

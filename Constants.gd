@@ -28,6 +28,12 @@ var GROUPS = {
   'OBSTACLES': 'obstacles'
 }
 
+enum ITEM_TYPE {
+  weapon,
+  item,
+  apple_piece
+}
+
 func roll_dice(die, count: int):
   var result = 0
   var minimum = count

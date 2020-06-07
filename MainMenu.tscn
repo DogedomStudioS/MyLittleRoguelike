@@ -31,10 +31,10 @@ __meta__ = {
 }
 
 [node name="VBoxContainer2" type="VBoxContainer" parent="CenterContainer"]
-margin_left = 594.0
-margin_top = 378.0
-margin_right = 686.0
-margin_bottom = 422.0
+margin_left = 274.0
+margin_top = 158.0
+margin_right = 366.0
+margin_bottom = 202.0
 
 [node name="New Game" type="Button" parent="CenterContainer/VBoxContainer2"]
 margin_right = 92.0

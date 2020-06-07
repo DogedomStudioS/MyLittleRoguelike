@@ -34,3 +34,6 @@ func get_tile_contents(tile: Vector2):
   
 func _index_for_tile(tile: Vector2):
   return "%d,%d" % [tile.x, tile.y]
+
+func check_surrounding_tiles_for_node(node, location, include_location = false):
+  pass

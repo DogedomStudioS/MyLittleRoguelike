@@ -29,6 +29,7 @@ func handle_orders(time):
   order_queue = in_progress_orders
   for handler in order_completion_handlers:
     handler.orders_handled(game_time)
+  MessageLog.refresh_display()
 
 func _physics_process(_delta):
   for order in resolvable_orders:

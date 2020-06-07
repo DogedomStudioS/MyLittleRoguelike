@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=2]
+[gd_scene load_steps=11 format=2]
 
 [ext_resource path="res://level/World.gd" type="Script" id=1]
 [ext_resource path="res://assets/tilesets/tileset_color_blocks.tres" type="TileSet" id=2]
@@ -7,25 +7,44 @@
 [ext_resource path="res://assets/tilesets/fog_of_war.tres" type="TileSet" id=5]
 [ext_resource path="res://visibility.gd" type="Script" id=6]
 [ext_resource path="res://level/LevelMap.gd" type="Script" id=7]
+[ext_resource path="res://UI.tscn" type="PackedScene" id=8]
+[ext_resource path="res://Inventory.tscn" type="PackedScene" id=9]
 
 [sub_resource type="RectangleShape2D" id=1]
 extents = Vector2( 17, 17 )
 
-[node name="World" type="Node2D"]
+[node name="Root" type="ViewportContainer"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+stretch = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Game" type="Viewport" parent="."]
+size = Vector2( 640, 360 )
+handle_input_locally = false
+usage = 1
+render_target_update_mode = 3
+
+[node name="World" type="Node2D" parent="Game"]
 script = ExtResource( 1 )
 __meta__ = {
 "_edit_lock_": true
 }
 
-[node name="Input" type="Node" parent="."]
+[node name="Input" type="Node" parent="Game/World"]
 script = ExtResource( 3 )
 
-[node name="Rooms" type="Node" parent="."]
+[node name="Rooms" type="Node" parent="Game/World"]
 
-[node name="Navigation2D" type="Navigation2D" parent="."]
+[node name="Navigation2D" type="Navigation2D" parent="Game/World"]
 
-[node name="TileMap" type="TileMap" parent="Navigation2D"]
+[node name="TileMap" type="TileMap" parent="Game/World/Navigation2D"]
 show_behind_parent = true
+z_index = -10
 tile_set = ExtResource( 2 )
 cell_size = Vector2( 32, 32 )
 cell_custom_transform = Transform2D( 0, 0, 0, 0, 0, 0 )
@@ -35,20 +54,19 @@ __meta__ = {
 "_edit_lock_": true
 }
 
-[node name="Player" parent="Navigation2D/TileMap" instance=ExtResource( 4 )]
+[node name="Player" parent="Game/World/Navigation2D/TileMap" instance=ExtResource( 4 )]
 
-[node name="Camera" type="Camera2D" parent="."]
+[node name="Camera" type="Camera2D" parent="Game/World"]
 current = true
-zoom = Vector2( 0.5, 0.5 )
 
-[node name="Player Eyes" type="KinematicBody2D" parent="."]
+[node name="Player Eyes" type="KinematicBody2D" parent="Game/World"]
 collision_layer = 512
 collision_mask = 512
 
-[node name="Player Eyes Collider" type="CollisionShape2D" parent="Player Eyes"]
+[node name="Player Eyes Collider" type="CollisionShape2D" parent="Game/World/Player Eyes"]
 shape = SubResource( 1 )
 
-[node name="FogOfWar" type="TileMap" parent="."]
+[node name="FogOfWar" type="TileMap" parent="Game/World"]
 tile_set = ExtResource( 5 )
 cell_size = Vector2( 32, 32 )
 cell_custom_transform = Transform2D( 0, 0, 0, 0, 0, 0 )
@@ -56,3 +74,16 @@ collision_layer = 0
 collision_mask = 0
 format = 1
 script = ExtResource( 6 )
+
+[node name="UIViewport" type="Viewport" parent="."]
+size = Vector2( 640, 360 )
+transparent_bg = true
+handle_input_locally = false
+disable_3d = true
+usage = 1
+render_target_update_mode = 3
+
+[node name="UI" parent="UIViewport" instance=ExtResource( 8 )]
+
+[node name="Inventory" parent="UIViewport" instance=ExtResource( 9 )]
+visible = false

@@ -3,11 +3,21 @@ extends Node
 onready var current_player: KinematicBody2D = $"../Navigation2D/TileMap/Player"
 onready var map = $"../Navigation2D/TileMap"
 onready var camera: Camera2D = $"../Camera"
+onready var inventory_overlay = $"../../../UIViewport/Inventory"
 
 var speed = 200.0
 var velocity = Vector2(0, 0)
 
 func _physics_process(_delta):
+  if Input.is_action_just_pressed("toggle_inventory"):
+    if !inventory_overlay.is_visible():
+      inventory_overlay.show_inventory(current_player)
+    inventory_overlay.set_visible(!inventory_overlay.is_visible())
+  
+  if inventory_overlay.is_visible():
+    camera.position = current_player.get_node("Sprite").global_position
+    return
+
   var direction = null
   velocity = Vector2(0, 0)
   if Input.is_action_just_pressed("move_north"):
@@ -33,7 +43,7 @@ func _physics_process(_delta):
           },
           'player': true
         })
-        return
+        
     Scheduler.submit(current_player, {
       'type': 'move',
       'payload': direction,

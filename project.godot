@@ -24,11 +24,13 @@ config/icon="res://icon.png"
 Scheduler="*res://actions/scheduler.gd"
 Constants="*res://Constants.gd"
 Game="*res://Game.gd"
+MessageLog="*res://MessageLog.gd"
+Items="*res://items/Items.gd"
 
 [display]
 
-window/size/width=1280
-window/size/height=800
+window/size/width=640
+window/size/height=360
 window/dpi/allow_hidpi=true
 window/stretch/mode="viewport"
 window/stretch/aspect="keep_height"
@@ -69,6 +71,11 @@ move_northwest={
 move_west={
 "deadzone": 0.5,
 "events": [ Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":false,"control":false,"meta":false,"command":false,"pressed":false,"scancode":65,"unicode":0,"echo":false,"script":null)
+ ]
+}
+toggle_inventory={
+"deadzone": 0.5,
+"events": [ Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":false,"control":false,"meta":false,"command":false,"pressed":false,"scancode":73,"unicode":0,"echo":false,"script":null)
  ]
 }
 

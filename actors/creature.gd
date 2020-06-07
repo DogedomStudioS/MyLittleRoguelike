@@ -5,9 +5,12 @@ onready var tile_mover = $tile_mover
 onready var mortality = $mortality
 onready var tween = $Tween
 
-const base_action_speed = 1.4
-var modified_action_speed = 1.4
+var nice_name = "Creature"
+const base_action_speed = 1.8
+var modified_action_speed = 1.8
 var behaviors
+var is_player = false
+var directional_animation = false
 
 func _ready():
   add_to_group(Constants.GROUPS.HOSTILES)
@@ -32,4 +35,5 @@ func handle_action(order):
   Scheduler.submit(self, get_next_action())
 
 func get_next_action():
+  # simple as can be, for now - just check if the player is adjacent and attack if so
   return wander.generate_next_action()

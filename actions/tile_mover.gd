@@ -55,6 +55,8 @@ func move(direction: String):
     return
   if not map and host.get_parent().get_class() == 'TileMap':
     map = host.get_parent()
+  if host.directional_animation:
+    host.get_node("Sprite/Body").frame = ["up", "right", "down", "left"].find(direction)
   var destination = host.position + Constants.directions[direction] * tile_size
   var blocked = check_blocked(direction) or destination in map.claimed_move_targets
   if blocked:
@@ -70,3 +72,13 @@ func move(direction: String):
   map.add_to_tile(host, map.world_to_map(destination), map.world_to_map(previous_position))
   moving = false
   move_tween()
+
+
+func _on_Tween_tween_step(_object, _key, elapsed, value):
+  if "move_animation" in host and host.move_animation == "bounces":
+    host.get_node("Sprite/Body").position = Vector2(0, ((elapsed - 0.1) * 50.0) - (0.1 * 50) - 1.0)
+
+
+func _on_Tween_tween_completed(object, key):
+  if "move_animation" in host:
+    host.get_node("Sprite/Body").position = Vector2(0, -2)

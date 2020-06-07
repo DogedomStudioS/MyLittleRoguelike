@@ -4,21 +4,30 @@ var host: KinematicBody2D
 onready var tween: Tween = $Tween
 var tween_speed = 16
 var weapon
-var unarmed_damage = { "die": Constants.DICE.d4, "die_count": 1 }
+var unarmed_damage = { "name": "label", "properties": { "die": Constants.DICE.d4, "die_count": 1 }}
 
-func arm_weapon(new_weapon):
-  weapon = new_weapon
+func arm_weapon(new_weapon = null, you = false):
+  if new_weapon:
+    weapon = new_weapon
+    if you:
+      MessageLog.log("Wielded %s." % [new_weapon.label])
+  else:
+    weapon = unarmed_damage
+    if you:
+      MessageLog.log("You are now unarmed.")
 
 func attack_damage():
   if weapon:
-    return Constants.roll_dice(weapon.die, weapon.die_count)
+    return Constants.roll_dice(weapon.properties.die, weapon.properties.die_count)
   else:
-    return Constants.roll_dice(unarmed_damage.die, unarmed_damage.die_count)
+    return Constants.roll_dice(unarmed_damage.properties.die, unarmed_damage.properties.die_count)
 
-func attack(options):
+func attack(options, you = false):
   var target = options.target
   var direction = options.direction
   if 'mortality' in target:
+    if you:
+      MessageLog.log("You hit the %s." % [target.nice_name])
     target.mortality.hurt(attack_damage())
     _animate_attack(direction)
   

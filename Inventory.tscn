@@ -1,0 +1,110 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://assets/RobotoBold120.tres" type="DynamicFont" id=1]
+[ext_resource path="res://ui/inventory_ui.gd" type="Script" id=2]
+
+[node name="Inventory" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource( 2 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="OuterContainer" type="PanelContainer" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 64.0
+margin_top = 72.0
+margin_right = -64.0
+margin_bottom = -10.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="InnerContainer" type="HBoxContainer" parent="OuterContainer"]
+margin_left = 7.0
+margin_top = 7.0
+margin_right = 505.0
+margin_bottom = 271.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Left" type="VBoxContainer" parent="OuterContainer/InnerContainer"]
+margin_right = 247.0
+margin_bottom = 264.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+custom_constants/separation = 4
+
+[node name="Label" type="Label" parent="OuterContainer/InnerContainer/Left"]
+margin_right = 247.0
+margin_bottom = 19.0
+custom_fonts/font = ExtResource( 1 )
+text = "Weapons"
+align = 1
+
+[node name="MarginContainer" type="MarginContainer" parent="OuterContainer/InnerContainer/Left"]
+margin_top = 23.0
+margin_right = 247.0
+margin_bottom = 225.0
+size_flags_vertical = 3
+custom_constants/margin_right = 10
+custom_constants/margin_left = 20
+custom_constants/margin_bottom = 4
+
+[node name="WeaponsList" type="ItemList" parent="OuterContainer/InnerContainer/Left/MarginContainer"]
+margin_left = 20.0
+margin_right = 237.0
+margin_bottom = 198.0
+
+[node name="MarginContainer2" type="MarginContainer" parent="OuterContainer/InnerContainer/Left"]
+margin_top = 229.0
+margin_right = 247.0
+margin_bottom = 264.0
+custom_constants/margin_right = 10
+custom_constants/margin_left = 20
+custom_constants/margin_bottom = 10
+
+[node name="Button" type="Button" parent="OuterContainer/InnerContainer/Left/MarginContainer2"]
+margin_left = 20.0
+margin_right = 237.0
+margin_bottom = 25.0
+custom_fonts/font = ExtResource( 1 )
+text = "Disarm"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Right" type="VBoxContainer" parent="OuterContainer/InnerContainer"]
+margin_left = 251.0
+margin_right = 498.0
+margin_bottom = 264.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+custom_constants/separation = 4
+
+[node name="Label" type="Label" parent="OuterContainer/InnerContainer/Right"]
+margin_right = 247.0
+margin_bottom = 19.0
+custom_fonts/font = ExtResource( 1 )
+text = "Items"
+align = 1
+
+[node name="MarginContainer" type="MarginContainer" parent="OuterContainer/InnerContainer/Right"]
+margin_top = 23.0
+margin_right = 247.0
+margin_bottom = 264.0
+size_flags_vertical = 3
+custom_constants/margin_right = 20
+custom_constants/margin_left = 10
+custom_constants/margin_bottom = 10
+
+[node name="ItemsList" type="ItemList" parent="OuterContainer/InnerContainer/Right/MarginContainer"]
+margin_left = 10.0
+margin_right = 227.0
+margin_bottom = 231.0
+[connection signal="item_selected" from="OuterContainer/InnerContainer/Left/MarginContainer/WeaponsList" to="." method="_on_WeaponsList_item_selected"]
+[connection signal="pressed" from="OuterContainer/InnerContainer/Left/MarginContainer2/Button" to="." method="_on_Button_pressed"]
+[connection signal="item_selected" from="OuterContainer/InnerContainer/Right/MarginContainer/ItemsList" to="." method="_on_ItemsList_item_selected"]

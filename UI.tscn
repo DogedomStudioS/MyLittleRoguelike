@@ -1,0 +1,41 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://assets/RobotoBold120.tres" type="DynamicFont" id=1]
+
+[node name="UI" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Messages" type="VBoxContainer" parent="."]
+anchor_right = 1.0
+margin_left = 64.0
+margin_right = -64.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="message_1" type="Label" parent="Messages"]
+margin_right = 512.0
+margin_bottom = 19.0
+custom_fonts/font = ExtResource( 1 )
+custom_colors/font_color = Color( 1, 1, 1, 1 )
+custom_colors/font_outline_modulate = Color( 0, 0, 0, 1 )
+align = 1
+
+[node name="message_2" type="Label" parent="Messages"]
+margin_top = 23.0
+margin_right = 512.0
+margin_bottom = 42.0
+custom_fonts/font = ExtResource( 1 )
+align = 1
+clip_text = true
+
+[node name="message_3" type="Label" parent="Messages"]
+margin_top = 46.0
+margin_right = 512.0
+margin_bottom = 65.0
+custom_fonts/font = ExtResource( 1 )
+align = 1

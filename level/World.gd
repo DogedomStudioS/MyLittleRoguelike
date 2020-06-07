@@ -10,9 +10,9 @@ var debug_draw = false
 var debug_map_generation = false
 
 var tile_size = 32
-var num_rooms = 30
+var num_rooms = 12
 var min_size = 3
-var max_size = 8
+var max_size = 6
 var h_spread = 100
 var cull = 0.25
 var door_candidates = []
@@ -29,6 +29,14 @@ func _ready():
   Map.claimed_move_targets = []
   randomize()
   make_rooms()
+  setup_message_log()
+
+func setup_message_log():
+  MessageLog.message_labels = [
+    $"../../UIViewport/UI/Messages/message_1",
+    $"../../UIViewport/UI/Messages/message_2",
+    $"../../UIViewport/UI/Messages/message_3",
+  ]
 
 func make_rooms():
   for _i in range(num_rooms):
