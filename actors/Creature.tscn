@@ -1,24 +1,35 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=9 format=2]
 
 [ext_resource path="res://assets/sprites/creature.png" type="Texture" id=1]
 [ext_resource path="res://actors/creature.gd" type="Script" id=2]
 [ext_resource path="res://actions/tile_mover.gd" type="Script" id=3]
 [ext_resource path="res://actions/behaviors/wander.gd" type="Script" id=4]
 [ext_resource path="res://actions/mortality.gd" type="Script" id=5]
+[ext_resource path="res://assets/sprites/orange_blob_shadow.png" type="Texture" id=6]
+[ext_resource path="res://actions/attack.gd" type="Script" id=7]
 
 [sub_resource type="RectangleShape2D" id=1]
 extents = Vector2( 16, 16 )
 
 [node name="Creature" type="KinematicBody2D"]
+z_index = 1
 collision_layer = 2
+collision_mask = 33
 script = ExtResource( 2 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource( 1 )
 
-[node name="Sprite" type="Sprite" parent="."]
+[node name="Sprite" type="Node2D" parent="."]
+
+[node name="Shadow" type="Sprite" parent="Sprite"]
+texture = ExtResource( 6 )
+offset = Vector2( 0, -2 )
+
+[node name="Body" type="Sprite" parent="Sprite"]
 position = Vector2( 1, 0 )
 texture = ExtResource( 1 )
+offset = Vector2( 0, -2 )
 
 [node name="collider_north" type="RayCast2D" parent="."]
 position = Vector2( 0, -8 )
@@ -49,6 +60,7 @@ collision_mask = 3
 collide_with_areas = true
 
 [node name="Tween" type="Tween" parent="."]
+playback_process_mode = 0
 
 [node name="tile_mover" type="Node" parent="."]
 script = ExtResource( 3 )
@@ -59,4 +71,18 @@ script = ExtResource( 4 )
 [node name="mortality" type="Node" parent="."]
 script = ExtResource( 5 )
 
-[node name="Tween" type="Tween" parent="mortality"]
+[node name="mortality_timer" type="Timer" parent="mortality"]
+wait_time = 0.18
+one_shot = true
+
+[node name="collider_fog" type="RayCast2D" parent="."]
+enabled = true
+cast_to = Vector2( 0, 6 )
+collision_mask = 32
+collide_with_areas = true
+
+[node name="attack" type="Node" parent="."]
+script = ExtResource( 7 )
+
+[node name="Tween" type="Tween" parent="attack"]
+[connection signal="timeout" from="mortality/mortality_timer" to="mortality" method="_on_mortality_timer_timeout"]

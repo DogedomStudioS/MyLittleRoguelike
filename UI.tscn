@@ -1,10 +1,12 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene load_steps=3 format=2]
 
 [ext_resource path="res://assets/RobotoBold120.tres" type="DynamicFont" id=1]
+[ext_resource path="res://UI.gd" type="Script" id=2]
 
 [node name="UI" type="Control"]
 anchor_right = 1.0
 anchor_bottom = 1.0
+script = ExtResource( 2 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -39,3 +41,93 @@ margin_right = 512.0
 margin_bottom = 65.0
 custom_fonts/font = ExtResource( 1 )
 align = 1
+
+[node name="StatusContainer" type="MarginContainer" parent="."]
+anchor_top = 1.0
+anchor_bottom = 1.0
+margin_top = -30.0
+margin_right = 300.0
+rect_min_size = Vector2( 300, 0 )
+custom_constants/margin_left = 10
+custom_constants/margin_bottom = 10
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="StatusInnerContainer" type="HBoxContainer" parent="StatusContainer"]
+margin_left = 10.0
+margin_right = 300.0
+margin_bottom = 20.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Label" type="Label" parent="StatusContainer/StatusInnerContainer"]
+margin_right = 43.0
+margin_bottom = 19.0
+custom_fonts/font = ExtResource( 1 )
+text = "Health"
+valign = 1
+
+[node name="HealthBar" type="ProgressBar" parent="StatusContainer/StatusInnerContainer"]
+margin_left = 47.0
+margin_right = 169.0
+margin_bottom = 20.0
+size_flags_horizontal = 3
+size_flags_vertical = 1
+size_flags_stretch_ratio = 4.0
+max_value = 30.0
+step = 1.0
+value = 30.0
+rounded = true
+percent_visible = false
+
+[node name="Label3" type="Label" parent="StatusContainer/StatusInnerContainer"]
+margin_left = 173.0
+margin_top = 3.0
+margin_right = 181.0
+margin_bottom = 17.0
+text = "  "
+
+[node name="Label2" type="Label" parent="StatusContainer/StatusInnerContainer"]
+margin_left = 185.0
+margin_right = 278.0
+margin_bottom = 19.0
+custom_fonts/font = ExtResource( 1 )
+text = "Experience Lvl"
+
+[node name="Level" type="Label" parent="StatusContainer/StatusInnerContainer"]
+margin_left = 282.0
+margin_right = 290.0
+margin_bottom = 19.0
+custom_fonts/font = ExtResource( 1 )
+text = "1"
+
+[node name="FloorContainer" type="MarginContainer" parent="."]
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_top = -30.0
+grow_horizontal = 0
+custom_constants/margin_right = 10
+custom_constants/margin_bottom = 10
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="FloorInnerContainer" type="HBoxContainer" parent="FloorContainer"]
+margin_right = 45.0
+margin_bottom = 20.0
+
+[node name="Label" type="Label" parent="FloorContainer/FloorInnerContainer"]
+margin_right = 33.0
+margin_bottom = 19.0
+custom_fonts/font = ExtResource( 1 )
+text = "Floor"
+
+[node name="Floor" type="Label" parent="FloorContainer/FloorInnerContainer"]
+margin_left = 37.0
+margin_right = 45.0
+margin_bottom = 19.0
+custom_fonts/font = ExtResource( 1 )
+text = "1"

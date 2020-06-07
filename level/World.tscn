@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=2]
+[gd_scene load_steps=14 format=2]
 
 [ext_resource path="res://level/World.gd" type="Script" id=1]
 [ext_resource path="res://assets/tilesets/tileset_color_blocks.tres" type="TileSet" id=2]
@@ -9,6 +9,9 @@
 [ext_resource path="res://level/LevelMap.gd" type="Script" id=7]
 [ext_resource path="res://UI.tscn" type="PackedScene" id=8]
 [ext_resource path="res://Inventory.tscn" type="PackedScene" id=9]
+[ext_resource path="res://Loading.tscn" type="PackedScene" id=10]
+[ext_resource path="res://Menu.tscn" type="PackedScene" id=11]
+[ext_resource path="res://Downstairs.tscn" type="PackedScene" id=12]
 
 [sub_resource type="RectangleShape2D" id=1]
 extents = Vector2( 17, 17 )
@@ -44,10 +47,10 @@ script = ExtResource( 3 )
 
 [node name="TileMap" type="TileMap" parent="Game/World/Navigation2D"]
 show_behind_parent = true
-z_index = -10
 tile_set = ExtResource( 2 )
 cell_size = Vector2( 32, 32 )
 cell_custom_transform = Transform2D( 0, 0, 0, 0, 0, 0 )
+cell_y_sort = true
 format = 1
 script = ExtResource( 7 )
 __meta__ = {
@@ -55,6 +58,9 @@ __meta__ = {
 }
 
 [node name="Player" parent="Game/World/Navigation2D/TileMap" instance=ExtResource( 4 )]
+z_index = 1
+
+[node name="Downstairs" parent="Game/World/Navigation2D/TileMap" instance=ExtResource( 12 )]
 
 [node name="Camera" type="Camera2D" parent="Game/World"]
 current = true
@@ -70,8 +76,8 @@ shape = SubResource( 1 )
 tile_set = ExtResource( 5 )
 cell_size = Vector2( 32, 32 )
 cell_custom_transform = Transform2D( 0, 0, 0, 0, 0, 0 )
-collision_layer = 0
-collision_mask = 0
+collision_layer = 32
+collision_mask = 32
 format = 1
 script = ExtResource( 6 )
 
@@ -86,4 +92,9 @@ render_target_update_mode = 3
 [node name="UI" parent="UIViewport" instance=ExtResource( 8 )]
 
 [node name="Inventory" parent="UIViewport" instance=ExtResource( 9 )]
+visible = false
+
+[node name="Loading" parent="UIViewport" instance=ExtResource( 10 )]
+
+[node name="Menu" parent="UIViewport" instance=ExtResource( 11 )]
 visible = false

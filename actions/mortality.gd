@@ -1,13 +1,15 @@
 extends Node
 
+onready var timer: Timer = $mortality_timer
 var host
 var hitpoints = 1
 var max_hitpoints = 1
+const HURT_COLOR = Color(1.0, 0.2, 0.2, 1.0)
 
 func hurt(damage: int):
   hitpoints -= damage
-  if "is_player" in host and host.is_player == true:
-    MessageLog.log("The %s hits!" % [host.nice_name])
+  host.get_node("Sprite").set_modulate(HURT_COLOR)
+  timer.start(0.18)
   if hitpoints < 0 and host:
     if "is_player" in host and host.is_player == true:
       MessageLog.log("You die...")
@@ -17,3 +19,7 @@ func hurt(damage: int):
       host.die()
     else:
       host.queue_free()
+
+
+func _on_mortality_timer_timeout():
+  host.get_node("Sprite").set_modulate(Color(1, 1, 1, 1))

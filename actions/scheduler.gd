@@ -3,12 +3,13 @@ extends Node
 var order_queue = []
 var resolvable_orders = []
 var order_completion_handlers = []
-var game_time = 0.0
+var game_time: float = 0.0
 
 const order_times = {
     "move": 100,
     "attack": 75
 }
+
 
 func submit(target, action):
   var speed_modifier = target.modified_action_speed if ("modified_action_speed" in target) else 1.0

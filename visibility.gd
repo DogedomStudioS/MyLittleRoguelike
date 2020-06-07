@@ -14,12 +14,15 @@ var shadow_map_dirty = false
 var debug_color = Color(1.0, 0.0, 0.0, 1.0)
 
 func _ready():
-  space_state = player.get_world_2d().direct_space_state
+  space_state = player.get_world_2d().direct_space_state 
 
 func _physics_process(_delta):
+  if !is_instance_valid(player):
+    return
   if shadow_map_dirty:
     update_visibility(last_center_tile)
     update()
+    level_map.update_visibility()
   if world_to_map(player.position) != last_position:
     shadow_map_dirty = true
     space_state = get_world_2d().direct_space_state

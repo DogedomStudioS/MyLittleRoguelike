@@ -3,6 +3,7 @@ extends Node
 var host: KinematicBody2D
 onready var tween: Tween = $Tween
 var tween_speed = 16
+var bonus_damage = 0
 var weapon
 var unarmed_damage = { "name": "label", "properties": { "die": Constants.DICE.d4, "die_count": 1 }}
 
@@ -26,9 +27,11 @@ func attack(options, you = false):
   var target = options.target
   var direction = options.direction
   if 'mortality' in target:
-    if you:
+    if you == true:
       MessageLog.log("You hit the %s." % [target.nice_name])
-    target.mortality.hurt(attack_damage())
+    else:
+      MessageLog.log("The %s hits!" % [host.nice_name])
+    target.mortality.hurt(attack_damage() + bonus_damage)
     _animate_attack(direction)
   
 func _animate_attack(direction):
@@ -37,7 +40,7 @@ func _animate_attack(direction):
     host.get_node("Sprite"),
     "position",
     host.get_node("Sprite").position,
-    Constants.directions[direction] * 6,
+    Constants.directions[direction] * 10,
     1.0/tween_speed, Tween.TRANS_SINE, Tween.EASE_IN
   )
   tween.start()

@@ -15,8 +15,8 @@ _global_script_class_icons={
 
 [application]
 
-config/name="My Little Roguelike"
-run/main_scene="res://MainMenu.tscn"
+config/name="OrangeHack"
+run/main_scene="res://level/World.tscn"
 config/icon="res://icon.png"
 
 [autoload]

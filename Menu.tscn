@@ -1,0 +1,80 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://assets/RobotoBold120.tres" type="DynamicFont" id=1]
+[ext_resource path="res://Ingame_Menu.gd" type="Script" id=2]
+
+[node name="Menu" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource( 2 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="OuterContainer" type="MarginContainer" parent="."]
+anchor_left = 0.5
+anchor_right = 0.5
+anchor_bottom = 1.0
+grow_horizontal = 2
+rect_min_size = Vector2( 200, 0 )
+custom_constants/margin_top = 128
+custom_constants/margin_bottom = 64
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Panel" type="Panel" parent="OuterContainer"]
+margin_top = 128.0
+margin_right = 250.0
+margin_bottom = 296.0
+rect_min_size = Vector2( 250, 0 )
+
+[node name="InnerContainer" type="VBoxContainer" parent="OuterContainer/Panel"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -20.0
+margin_top = -20.0
+margin_right = 20.0
+margin_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+rect_min_size = Vector2( 128, 0 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label" type="Label" parent="OuterContainer/Panel/InnerContainer"]
+margin_right = 198.0
+margin_bottom = 63.0
+custom_fonts/font = ExtResource( 1 )
+text = "OrangeHack
+
+"
+align = 1
+
+[node name="Restart" type="Button" parent="OuterContainer/Panel/InnerContainer"]
+margin_top = 67.0
+margin_right = 198.0
+margin_bottom = 92.0
+custom_fonts/font = ExtResource( 1 )
+text = "Restart"
+
+[node name="Quit" type="Button" parent="OuterContainer/Panel/InnerContainer"]
+margin_top = 96.0
+margin_right = 198.0
+margin_bottom = 121.0
+custom_fonts/font = ExtResource( 1 )
+text = "Quit"
+
+[node name="Label2" type="Label" parent="OuterContainer/Panel/InnerContainer"]
+margin_top = 125.0
+margin_right = 198.0
+margin_bottom = 166.0
+custom_fonts/font = ExtResource( 1 )
+text = "
+For My Little Roguelike Jam #1"
+align = 1
+[connection signal="pressed" from="OuterContainer/Panel/InnerContainer/Restart" to="." method="_on_Restart_pressed"]
+[connection signal="pressed" from="OuterContainer/Panel/InnerContainer/Quit" to="." method="_on_Quit_pressed"]

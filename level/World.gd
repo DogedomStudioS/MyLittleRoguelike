@@ -3,8 +3,12 @@ extends Node2D
 var Room = preload("res://level/Room.tscn")
 var font = preload("res://assets/RobotoBold120.tres")
 onready var Map = $Navigation2D/TileMap
+onready var FogMap = $FogOfWar
 onready var Player = $Navigation2D/TileMap/Player
+onready var Downstairs = $Navigation2D/TileMap/Downstairs
+onready var Loading = $"../../UIViewport/Loading"
 var Creature = preload("../actors/Creature.tscn")
+var GreenApple = preload("../actors/GreenApple.tscn")
 
 var debug_draw = false
 var debug_map_generation = false
@@ -12,24 +16,52 @@ var debug_map_generation = false
 var tile_size = 32
 var num_rooms = 12
 var min_size = 3
-var max_size = 6
+var max_size = 8
 var h_spread = 100
-var cull = 0.25
+var cull = 0.15
 var door_candidates = []
 var tile_rooms = 47
 var tile_empty = 52
 var tile_threshold = 50
 var tile_corridor = 51
+var initial_creatures = 9
+
+const GREEN_APPLE_CHANCE = 0.15
+const CREATURE_SPAWN_TIME = 45
+var last_creature_spawned = 0.0
 
 var path
 var start_room = null
 var end_room = null
 
 func _ready():
+  $Input.frozen_input = true
+  Map.fog_of_war = FogMap
   Map.claimed_move_targets = []
   randomize()
   make_rooms()
   setup_message_log()
+  Scheduler.order_completion_handlers.append(self)
+  if Game.current_floor == 1:
+    MessageLog.log("Welcome to OrangeHack!")
+
+func orders_handled(game_time):
+  if game_time - last_creature_spawned > CREATURE_SPAWN_TIME:
+    var green_apple_chance = (GREEN_APPLE_CHANCE * float(Game.current_floor)) * 100.0
+    print(green_apple_chance)
+    var rooms = $Rooms.get_children()
+    var random_room = randi() % rooms.size()
+    var room = rooms[random_room]
+    var s = (room.size / tile_size).floor()
+    var ul = (room.position / tile_size).floor() - s
+    var tile = Vector2((randi() % int(s.x) * 2 - 1) + int(ul.x), (randi() % int(s.y) * 2 - 1) + int(ul.y))
+    if Map.get_cell(tile.x, tile.y) == tile_rooms and not Map.is_location_occupied(tile):
+      var new_creature = Creature.instance() if randi() % 100 > int(green_apple_chance) else GreenApple.instance()
+      new_creature.map = Map
+      Map.add_child(new_creature)
+      new_creature.position = Map.map_to_world(tile).snapped(Vector2.ONE * tile_size) + Vector2(tile_size / 2, tile_size / 2)
+      Map.add_to_tile(new_creature, Map.world_to_map(new_creature.position))
+      last_creature_spawned = game_time
 
 func setup_message_log():
   MessageLog.message_labels = [
@@ -83,7 +115,6 @@ func build_room_connections(nodes):
     else:
       path.remove_point(node_id)
       distant_nodes.append(node)
-  print(distant_nodes.size())
   for node in distant_nodes:
     var min_distance = INF
     var p = null
@@ -119,9 +150,18 @@ func make_map():
   for room in $Rooms.get_children():
     var s = (room.size / tile_size).floor()
     var ul = (room.position / tile_size).floor() - s
-    for x in range(0, s.x * 2):
-      for y in range(0, s.y * 2):
+    for x in range(1, s.x * 2 - 1):
+      for y in range(1, s.y * 2 - 1):
         Map.set_cell(ul.x + x, ul.y + y, tile_rooms)
+    if initial_creatures > 0:
+      initial_creatures -= 1
+      var tile = Vector2((randi() % int(s.x) * 2 - 1) + int(ul.x), (randi() % int(s.y) * 2 - 1) + int(ul.y))
+      if Map.get_cell(tile.x, tile.y) == tile_rooms and not Map.is_location_occupied(tile):
+        var new_creature = Creature.instance()
+        new_creature.map = Map
+        Map.add_child(new_creature)
+        new_creature.position = Map.map_to_world(tile).snapped(Vector2.ONE * tile_size) + Vector2(tile_size / 2, tile_size / 2)
+        Map.add_to_tile(new_creature, Map.world_to_map(new_creature.position))
     # Carve connecting corridor
     var p = path.get_closest_point(room.position)
     for conn in path.get_point_connections(p):
@@ -159,16 +199,16 @@ func make_map():
         Map.set_cell(door.x, door.y, tile_threshold)
   Player.position = start_room.position.snapped(Vector2.ONE * tile_size) + Vector2(tile_size / 2, tile_size / 2)
   Map.add_to_tile(Player, Map.world_to_map(Player.position))
+  Downstairs.position = (end_room.position + Vector2(0, 1)).snapped(Vector2.ONE * tile_size) + Vector2(tile_size / 2, tile_size / 2)
+  Map.add_to_tile(Downstairs, Map.world_to_map(Downstairs.position))
+  Map.Downstairs = Downstairs
   $Camera.position = Player.position
-  for _i in range(200):
-    var tile = Vector2(randi() % int(bottomright.x), randi() % int(bottomright.y))
-    if Map.get_cell(tile.x, tile.y) == tile_rooms:
-      var new_creature = Creature.instance()
-      Map.add_child(new_creature)
-      new_creature.position = Map.map_to_world(tile).snapped(Vector2.ONE * tile_size) + Vector2(tile_size / 2, tile_size / 2)
-      Map.add_to_tile(new_creature, Map.world_to_map(new_creature.position))
-  for room in $Rooms.get_children():
-    room.queue_free()
+  $"../../UIViewport/UI/".current_player = Player
+  $"../../UIViewport/UI/".ready = true
+  #for room in $Rooms.get_children():
+  #room.queue_free()
+  Loading.set_visible(false)
+  $Input.frozen_input = false
 
 func carve_path(pos1, pos2):
   # Carve a path between two points
@@ -231,16 +271,3 @@ func _draw():
 func _process(delta):
   update()
 
-func _input(event):
-  if debug_map_generation:
-    if event.is_action_pressed('ui_select'):
-      for n in $Rooms.get_children():
-        n.queue_free()
-      path = null
-      start_room = null
-      end_room = null
-      make_rooms()
-    if event.is_action_pressed('ui_focus_next'):
-      make_map()
-  if event.is_action_pressed("ui_cancel"):
-    get_tree().quit()

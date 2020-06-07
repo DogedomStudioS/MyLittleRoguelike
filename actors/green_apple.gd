@@ -6,19 +6,20 @@ onready var mortality = $mortality
 onready var attack = $attack
 onready var tween = $Tween
 
-var nice_name = "Creature"
+var nice_name = "Green Apple"
 var map: TileMap
-const base_action_speed = 2.0
-var modified_action_speed = 2.0
+const base_action_speed = 1.4
+var modified_action_speed = 1.4
 var behaviors
 var is_player = false
-var directional_animation = false
+var directional_animation = true
+var move_animation = "bounces"
 
 func _ready():
   add_to_group(Constants.GROUPS.HOSTILES)
   attack.host = self
-  mortality.hitpoints = 5
-  mortality.max_hitpoints = 5
+  mortality.hitpoints = 10
+  mortality.max_hitpoints = 10
   mortality.host = self
   tile_mover.host = self
   tile_mover.tween = $Tween
