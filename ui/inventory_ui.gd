@@ -15,7 +15,7 @@ func show_inventory(new_host):
     weapons_list.add_item(weapon.label, weapon.icon)
     if host.attack.weapon == weapon:
       weapons_list.select(weapons_index)
-    weapons_index += 1
+  weapons_index += 1
   for item in items:
     items_list.add_item(item.label, item.icon)
 

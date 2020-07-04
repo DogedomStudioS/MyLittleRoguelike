@@ -86,7 +86,6 @@ toggle_inventory={
 [rendering]
 
 quality/driver/driver_name="GLES2"
-quality/2d/gles2_use_nvidia_rect_flicker_workaround=true
 quality/intended_usage/framebuffer_allocation=1
 quality/intended_usage/framebuffer_allocation.mobile=1
 quality/2d/use_pixel_snap=true
@@ -95,3 +94,4 @@ vram_compression/import_etc2=false
 quality/filters/use_nearest_mipmap_filter=true
 environment/default_clear_color=Color( 0, 0, 0, 1 )
 environment/default_environment="res://default_env.tres"
+quality/2d/gles2_use_nvidia_rect_flicker_workaround=true

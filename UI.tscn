@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=2]
 
-[ext_resource path="res://assets/RobotoBold120.tres" type="DynamicFont" id=1]
 [ext_resource path="res://UI.gd" type="Script" id=2]
+[ext_resource path="res://assets/HopeGold.tres" type="DynamicFont" id=3]
 
 [node name="UI" type="Control"]
 anchor_right = 1.0
@@ -21,25 +21,25 @@ __meta__ = {
 
 [node name="message_1" type="Label" parent="Messages"]
 margin_right = 512.0
-margin_bottom = 19.0
-custom_fonts/font = ExtResource( 1 )
+margin_bottom = 13.0
+custom_fonts/font = ExtResource( 3 )
 custom_colors/font_color = Color( 1, 1, 1, 1 )
 custom_colors/font_outline_modulate = Color( 0, 0, 0, 1 )
 align = 1
 
 [node name="message_2" type="Label" parent="Messages"]
-margin_top = 23.0
+margin_top = 17.0
 margin_right = 512.0
-margin_bottom = 42.0
-custom_fonts/font = ExtResource( 1 )
+margin_bottom = 30.0
+custom_fonts/font = ExtResource( 3 )
 align = 1
 clip_text = true
 
 [node name="message_3" type="Label" parent="Messages"]
-margin_top = 46.0
+margin_top = 34.0
 margin_right = 512.0
-margin_bottom = 65.0
-custom_fonts/font = ExtResource( 1 )
+margin_bottom = 47.0
+custom_fonts/font = ExtResource( 3 )
 align = 1
 
 [node name="StatusContainer" type="MarginContainer" parent="."]
@@ -62,15 +62,16 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 
 [node name="Label" type="Label" parent="StatusContainer/StatusInnerContainer"]
-margin_right = 43.0
-margin_bottom = 19.0
-custom_fonts/font = ExtResource( 1 )
+margin_top = 3.0
+margin_right = 38.0
+margin_bottom = 16.0
+custom_fonts/font = ExtResource( 3 )
 text = "Health"
 valign = 1
 
 [node name="HealthBar" type="ProgressBar" parent="StatusContainer/StatusInnerContainer"]
-margin_left = 47.0
-margin_right = 169.0
+margin_left = 42.0
+margin_right = 180.0
 margin_bottom = 20.0
 size_flags_horizontal = 3
 size_flags_vertical = 1
@@ -82,24 +83,26 @@ rounded = true
 percent_visible = false
 
 [node name="Label3" type="Label" parent="StatusContainer/StatusInnerContainer"]
-margin_left = 173.0
+margin_left = 184.0
 margin_top = 3.0
-margin_right = 181.0
+margin_right = 192.0
 margin_bottom = 17.0
 text = "  "
 
 [node name="Label2" type="Label" parent="StatusContainer/StatusInnerContainer"]
-margin_left = 185.0
-margin_right = 278.0
-margin_bottom = 19.0
-custom_fonts/font = ExtResource( 1 )
+margin_left = 196.0
+margin_top = 3.0
+margin_right = 281.0
+margin_bottom = 16.0
+custom_fonts/font = ExtResource( 3 )
 text = "Experience Lvl"
 
 [node name="Level" type="Label" parent="StatusContainer/StatusInnerContainer"]
-margin_left = 282.0
+margin_left = 285.0
+margin_top = 3.0
 margin_right = 290.0
-margin_bottom = 19.0
-custom_fonts/font = ExtResource( 1 )
+margin_bottom = 16.0
+custom_fonts/font = ExtResource( 3 )
 text = "1"
 
 [node name="FloorContainer" type="MarginContainer" parent="."]
@@ -116,18 +119,20 @@ __meta__ = {
 }
 
 [node name="FloorInnerContainer" type="HBoxContainer" parent="FloorContainer"]
-margin_right = 45.0
+margin_right = 40.0
 margin_bottom = 20.0
 
 [node name="Label" type="Label" parent="FloorContainer/FloorInnerContainer"]
-margin_right = 33.0
-margin_bottom = 19.0
-custom_fonts/font = ExtResource( 1 )
+margin_top = 3.0
+margin_right = 31.0
+margin_bottom = 16.0
+custom_fonts/font = ExtResource( 3 )
 text = "Floor"
 
 [node name="Floor" type="Label" parent="FloorContainer/FloorInnerContainer"]
-margin_left = 37.0
-margin_right = 45.0
-margin_bottom = 19.0
-custom_fonts/font = ExtResource( 1 )
+margin_left = 35.0
+margin_top = 3.0
+margin_right = 40.0
+margin_bottom = 16.0
+custom_fonts/font = ExtResource( 3 )
 text = "1"

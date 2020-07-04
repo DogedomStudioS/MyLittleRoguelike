@@ -43,7 +43,7 @@ func _ready():
   setup_message_log()
   Scheduler.order_completion_handlers.append(self)
   if Game.current_floor == 1:
-    MessageLog.log("Welcome to OrangeHack!")
+    MessageLog.log("Welcome to Apples Versus Oranges!")
 
 func orders_handled(game_time):
   if game_time - last_creature_spawned > CREATURE_SPAWN_TIME:
