@@ -3,6 +3,7 @@ extends Node2D
 var Room = preload("res://level/Room.tscn")
 var font = preload("res://assets/RobotoBold120.tres")
 onready var Map = $Navigation2D/TileMap
+onready var VisibilityMap = $Navigation2D/VisibilityMap
 onready var FogMap = $FogOfWar
 onready var Player = $Navigation2D/TileMap/Player
 onready var Downstairs = $Navigation2D/TileMap/Downstairs
@@ -34,6 +35,7 @@ var path
 var start_room = null
 var end_room = null
 
+
 func _ready():
   $Input.frozen_input = true
   Map.fog_of_war = FogMap
@@ -45,6 +47,7 @@ func _ready():
   if Game.current_floor == 1:
     MessageLog.log("Welcome to Apples Versus Oranges!")
 
+
 func orders_handled(game_time):
   if game_time - last_creature_spawned > CREATURE_SPAWN_TIME:
     var green_apple_chance = (GREEN_APPLE_CHANCE * float(Game.current_floor)) * 100.0
@@ -54,14 +57,24 @@ func orders_handled(game_time):
     var room = rooms[random_room]
     var s = (room.size / tile_size).floor()
     var ul = (room.position / tile_size).floor() - s
-    var tile = Vector2((randi() % int(s.x) * 2 - 1) + int(ul.x), (randi() % int(s.y) * 2 - 1) + int(ul.y))
+    var tile = Vector2(
+      (randi() % int(s.x) * 2 - 1) + int(ul.x), (randi() % int(s.y) * 2 - 1) + int(ul.y)
+    )
     if Map.get_cell(tile.x, tile.y) == tile_rooms and not Map.is_location_occupied(tile):
-      var new_creature = Creature.instance() if randi() % 100 > int(green_apple_chance) else GreenApple.instance()
+      var new_creature = (
+        Creature.instance()
+        if randi() % 100 > int(green_apple_chance)
+        else GreenApple.instance()
+      )
       new_creature.map = Map
       Map.add_child(new_creature)
-      new_creature.position = Map.map_to_world(tile).snapped(Vector2.ONE * tile_size) + Vector2(tile_size / 2, tile_size / 2)
+      new_creature.position = (
+        Map.map_to_world(tile).snapped(Vector2.ONE * tile_size)
+        + Vector2(tile_size / 2, tile_size / 2)
+      )
       Map.add_to_tile(new_creature, Map.world_to_map(new_creature.position))
       last_creature_spawned = game_time
+
 
 func setup_message_log():
   MessageLog.message_labels = [
@@ -69,6 +82,7 @@ func setup_message_log():
     $"../../UIViewport/UI/Messages/message_2",
     $"../../UIViewport/UI/Messages/message_3",
   ]
+
 
 func make_rooms():
   for _i in range(num_rooms):
@@ -90,8 +104,9 @@ func make_rooms():
       room_positions.append(room.position)
   yield(get_tree(), 'idle_frame')
   path = build_room_connections(room_positions)
-  if !debug_map_generation:
+  if ! debug_map_generation:
     make_map()
+
 
 func build_room_connections(nodes):
   # connects each point in path with the previous point in the path.
@@ -129,6 +144,7 @@ func build_room_connections(nodes):
     path.connect_points(path.get_closest_point(p), n)
   return path
 
+
 func make_map():
   # Convert rooms to TileMap
   Map.clear()
@@ -136,7 +152,9 @@ func make_map():
   find_end_room()
   var full_rect = Rect2()
   for room in $Rooms.get_children():
-    var r = Rect2(room.position - room.size, room.get_node("CollisionShape2D").shape.extents * 2)
+    var r = Rect2(
+      room.position - room.size, room.get_node("CollisionShape2D").shape.extents * 2
+    )
     full_rect = full_rect.merge(r)
   full_rect = full_rect.grow(tile_size)
   var topleft = Map.world_to_map(full_rect.position)
@@ -144,7 +162,8 @@ func make_map():
   for x in range(topleft.x, bottomright.x):
     for y in range(topleft.y, bottomright.y):
       Map.set_cell(x, y, tile_empty)
-  
+      VisibilityMap.set_cell(x, y, 0)
+
   # Carve rooms
   var corridors = []
   for room in $Rooms.get_children():
@@ -153,23 +172,31 @@ func make_map():
     for x in range(1, s.x * 2 - 1):
       for y in range(1, s.y * 2 - 1):
         Map.set_cell(ul.x + x, ul.y + y, tile_rooms)
+        VisibilityMap.set_cell(ul.x + x, ul.y + y, -1)
     if initial_creatures > 0:
       initial_creatures -= 1
-      var tile = Vector2((randi() % int(s.x) * 2 - 1) + int(ul.x), (randi() % int(s.y) * 2 - 1) + int(ul.y))
+      var tile = Vector2(
+        (randi() % int(s.x) * 2 - 1) + int(ul.x), (randi() % int(s.y) * 2 - 1) + int(ul.y)
+      )
       if Map.get_cell(tile.x, tile.y) == tile_rooms and not Map.is_location_occupied(tile):
         var new_creature = Creature.instance()
         new_creature.map = Map
         Map.add_child(new_creature)
-        new_creature.position = Map.map_to_world(tile).snapped(Vector2.ONE * tile_size) + Vector2(tile_size / 2, tile_size / 2)
+        new_creature.position = (
+          Map.map_to_world(tile).snapped(Vector2.ONE * tile_size)
+          + Vector2(tile_size / 2, tile_size / 2)
+        )
         Map.add_to_tile(new_creature, Map.world_to_map(new_creature.position))
     # Carve connecting corridor
     var p = path.get_closest_point(room.position)
     for conn in path.get_point_connections(p):
       if not conn in corridors:
-        var start = Map.world_to_map(Vector2(path.get_point_position(p).x,
-                          path.get_point_position(p).y))
-        var end = Map.world_to_map(Vector2(path.get_point_position(conn).x,
-                          path.get_point_position(conn).y))
+        var start = Map.world_to_map(
+          Vector2(path.get_point_position(p).x, path.get_point_position(p).y)
+        )
+        var end = Map.world_to_map(
+          Vector2(path.get_point_position(conn).x, path.get_point_position(conn).y)
+        )
         carve_path(start, end)
     corridors.append(p)
   Map.update_bitmask_region(topleft, bottomright)
@@ -197,9 +224,15 @@ func make_map():
         valid_walls = neighbors[0] == 1 or neighbors[2] == 1
       if valid_walls:
         Map.set_cell(door.x, door.y, tile_threshold)
-  Player.position = start_room.position.snapped(Vector2.ONE * tile_size) + Vector2(tile_size / 2, tile_size / 2)
+  Player.position = (
+    start_room.position.snapped(Vector2.ONE * tile_size)
+    + Vector2(tile_size / 2, tile_size / 2)
+  )
   Map.add_to_tile(Player, Map.world_to_map(Player.position))
-  Downstairs.position = (end_room.position + Vector2(0, 1)).snapped(Vector2.ONE * tile_size) + Vector2(tile_size / 2, tile_size / 2)
+  Downstairs.position = (
+    (end_room.position + Vector2(0, 1)).snapped(Vector2.ONE * tile_size)
+    + Vector2(tile_size / 2, tile_size / 2)
+  )
   Map.add_to_tile(Downstairs, Map.world_to_map(Downstairs.position))
   Map.Downstairs = Downstairs
   $Camera.position = Player.position
@@ -210,12 +243,15 @@ func make_map():
   Loading.set_visible(false)
   $Input.frozen_input = false
 
+
 func carve_path(pos1, pos2):
   # Carve a path between two points
   var x_diff = sign(pos2.x - pos1.x)
   var y_diff = sign(pos2.y - pos1.y)
-  if x_diff == 0: x_diff = pow(-1.0, randi() % 2)
-  if y_diff == 0: y_diff = pow(-1.0, randi() % 2)
+  if x_diff == 0:
+    x_diff = pow(-1.0, randi() % 2)
+  if y_diff == 0:
+    y_diff = pow(-1.0, randi() % 2)
   # choose either x/y or y/x
   var x_y = pos1
   var y_x = pos2
@@ -229,16 +265,20 @@ func carve_path(pos1, pos2):
       last_cell = cell
     if cell == tile_empty or Map.get_cell_autotile_coord(x, x_y.y) != Vector2(1, 1):
       Map.set_cell(x, x_y.y, tile_rooms)
+      VisibilityMap.set_cell(x, x_y.y, -1)
     last_cell = cell
   for y in range(pos1.y, pos2.y, y_diff):
     var cell = Map.get_cell(y_x.x, y)
     if cell == tile_empty or Map.get_cell_autotile_coord(y_x.x, y) != Vector2(1, 1):
       Map.set_cell(y_x.x, y, tile_rooms)
-  
+      VisibilityMap.set_cell(y_x.x, y, -1)
+
+
 func find_start_room():
   var rooms = $Rooms.get_children()
   var room_count = rooms.size()
-  start_room = rooms[floor((rand_range(0, room_count - 1)))]
+  start_room = rooms[floor(rand_range(0, room_count - 1))]
+
 
 func find_end_room():
   var min_distance = 10 * tile_size
@@ -252,13 +292,14 @@ func find_end_room():
     if distance > min_distance:
       candidate_rooms.append(room)
   end_room = candidate_rooms[floor(rand_range(0, candidate_rooms.size() - 1))]
-  
+
+
 func _draw():
   if debug_draw:
     if start_room:
-      draw_string(font, start_room.position-Vector2(125,0), "start", Color(1,1,1))
+      draw_string(font, start_room.position - Vector2(125, 0), "start", Color(1, 1, 1))
     if end_room:
-      draw_string(font, end_room.position-Vector2(125,0), "end", Color(1,1,1))
+      draw_string(font, end_room.position - Vector2(125, 0), "end", Color(1, 1, 1))
     for room in $Rooms.get_children():
       draw_rect(Rect2(room.position - room.size, room.size * 2), Color(32, 228, 0), false)
       if path:
@@ -266,8 +307,10 @@ func _draw():
           for c in path.get_point_connections(p):
             var pp = path.get_point_position(p)
             var cp = path.get_point_position(c)
-            draw_line(Vector2(pp.x, pp.y), Vector2(cp.x, cp.y), Color(1, 1, 0), 15, true)
-  
-func _process(delta):
-  update()
+            draw_line(
+              Vector2(pp.x, pp.y), Vector2(cp.x, cp.y), Color(1, 1, 0), 15, true
+            )
 
+
+func _process(_delta):
+  update()

@@ -15,7 +15,8 @@ _global_script_class_icons={
 
 [application]
 
-config/name="OrangeHack"
+config/name="Apples vs. Oranges"
+config/description="They said it couldn't be done..."
 run/main_scene="res://level/World.tscn"
 config/icon="res://icon.png"
 
