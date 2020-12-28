@@ -10,6 +10,7 @@ onready var Downstairs = $Navigation2D/TileMap/Downstairs
 onready var Loading = $"../../UIViewport/Loading"
 var Creature = preload("../actors/Creature.tscn")
 var GreenApple = preload("../actors/GreenApple.tscn")
+var Obstacle = preload("../actors/Obstacle.tscn")
 
 var debug_draw = false
 var debug_map_generation = false
@@ -179,7 +180,7 @@ func make_map():
         (randi() % int(s.x) * 2 - 1) + int(ul.x), (randi() % int(s.y) * 2 - 1) + int(ul.y)
       )
       if Map.get_cell(tile.x, tile.y) == tile_rooms and not Map.is_location_occupied(tile):
-        var new_creature = Creature.instance()
+        var new_creature = Obstacle.instance()#Creature.instance()
         new_creature.map = Map
         Map.add_child(new_creature)
         new_creature.position = (
