@@ -11,6 +11,7 @@ onready var Loading = $"../../UIViewport/Loading"
 var Creature = preload("../actors/Creature.tscn")
 var GreenApple = preload("../actors/GreenApple.tscn")
 var Obstacle = preload("../actors/Obstacle.tscn")
+var Door = preload("../actors/Door.tscn")
 
 var debug_draw = false
 var debug_map_generation = false
@@ -180,7 +181,7 @@ func make_map():
         (randi() % int(s.x) * 2 - 1) + int(ul.x), (randi() % int(s.y) * 2 - 1) + int(ul.y)
       )
       if Map.get_cell(tile.x, tile.y) == tile_rooms and not Map.is_location_occupied(tile):
-        var new_creature = Obstacle.instance()#Creature.instance()
+        var new_creature = Creature.instance()
         new_creature.map = Map
         Map.add_child(new_creature)
         new_creature.position = (
@@ -202,7 +203,6 @@ func make_map():
     corridors.append(p)
   Map.update_bitmask_region(topleft, bottomright)
   for door in door_candidates:
-    pass
     # N, E, S, W
     var neighbors = [
       Map.get_cell(door.x, door.y - 1),
@@ -210,21 +210,21 @@ func make_map():
       Map.get_cell(door.x, door.y + 1),
       Map.get_cell(door.x - 1, door.y)
     ]
-    Map.set_cell(door.x, door.y, tile_threshold)
     # first check for exactly one floor neighbor
     var floor_neighbors = 0
-    var valid_walls = false
+    #var valid_walls = false
     for tile in neighbors:
-      if tile == 0:
+      if tile == tile_rooms:
         floor_neighbors += 1
-    if floor_neighbors == 1:
-      var north_south_door = neighbors.find(0) % 2 == 0
-      if north_south_door:
-        valid_walls = neighbors[1] == 1 or neighbors[3] == 1
-      else:
-        valid_walls = neighbors[0] == 1 or neighbors[2] == 1
-      if valid_walls:
-        Map.set_cell(door.x, door.y, tile_threshold)
+    if floor_neighbors == 2:
+      var new_door = Door.instance()
+      new_door.map = Map
+      Map.add_child(new_door)
+      new_door.position = (
+        Map.map_to_world(door).snapped(Vector2.ONE * tile_size)
+        + Vector2(tile_size / 2, tile_size / 2)
+      )
+      Map.add_to_tile(new_door, Map.world_to_map(new_door.position))
   Player.position = (
     start_room.position.snapped(Vector2.ONE * tile_size)
     + Vector2(tile_size / 2, tile_size / 2)
@@ -267,12 +267,32 @@ func carve_path(pos1, pos2):
     if cell == tile_empty or Map.get_cell_autotile_coord(x, x_y.y) != Vector2(1, 1):
       Map.set_cell(x, x_y.y, tile_rooms)
       VisibilityMap.set_cell(x, x_y.y, -1)
+      var solid_neighbors = false
+      var floor_neighbors = false
+      if Map.get_cell(x, x_y.y - 1) == tile_empty and Map.get_cell(x, x_y.y + 1) == tile_empty:
+        solid_neighbors = true
+      var left_neighbor = Map.get_cell(x - 1, x_y.y)
+      var right_neighbor = Map.get_cell(x + 1, x_y.y)
+      if left_neighbor == tile_rooms or right_neighbor == tile_rooms:
+        floor_neighbors = true
+      if solid_neighbors and floor_neighbors:
+        door_candidates.append(Vector2(x, x_y.y))
     last_cell = cell
   for y in range(pos1.y, pos2.y, y_diff):
     var cell = Map.get_cell(y_x.x, y)
     if cell == tile_empty or Map.get_cell_autotile_coord(y_x.x, y) != Vector2(1, 1):
       Map.set_cell(y_x.x, y, tile_rooms)
       VisibilityMap.set_cell(y_x.x, y, -1)
+      var solid_neighbors = false
+      var floor_neighbors = false
+      if Map.get_cell(y_x.x - 1, y) == tile_empty and Map.get_cell(y_x.x + 1, y) == tile_empty:
+        solid_neighbors = true
+      var north_neighbor = Map.get_cell(y_x.x, y - 1)
+      var south_neighbor = Map.get_cell(y_x.x, y + 1)
+      if north_neighbor == tile_rooms or south_neighbor == tile_rooms:
+        floor_neighbors = true
+      if solid_neighbors and floor_neighbors:
+        door_candidates.append(Vector2(y_x.x, y))
 
 
 func find_start_room():

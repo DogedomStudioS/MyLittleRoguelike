@@ -15,7 +15,8 @@ var GROUPS = {
   'PLAYER': 'player',
   'ITEMS': 'items',
   'TRAPS': 'traps',
-  'OBSTACLES': 'obstacles'
+  'OBSTACLES': 'obstacles',
+  'DOORS': 'doors'
 }
 
 enum ITEM_TYPE { weapon, item, apple_piece }

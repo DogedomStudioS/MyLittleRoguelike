@@ -89,3 +89,14 @@ func check_for_node_at_location(seek_node, location):
   var origin_index = _index_for_tile(origin)
   if origin_index in tile_contents:
     return tile_contents[origin_index].find(seek_node) > -1
+
+func get_first_surrounding_node_in_group(position: Vector2, group: String):
+  var origin = world_to_map(position)
+  for x in range(-1, 2):
+    for y in range(-1, 2):
+      var origin_index = _index_for_tile(origin + Vector2(x, y))
+      if origin_index in tile_contents:
+        for node in tile_contents[origin_index]:
+          if node.is_in_group(group):
+            return node
+  return null
