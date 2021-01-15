@@ -53,7 +53,6 @@ func _ready():
 func orders_handled(game_time):
   if game_time - last_creature_spawned > CREATURE_SPAWN_TIME:
     var green_apple_chance = (GREEN_APPLE_CHANCE * float(Game.current_floor)) * 100.0
-    print(green_apple_chance)
     var rooms = $Rooms.get_children()
     var random_room = randi() % rooms.size()
     var room = rooms[random_room]
@@ -264,8 +263,8 @@ func carve_path(pos1, pos2):
     var cell = Map.get_cell(x, x_y.y)
     if not last_cell:
       last_cell = cell
-    if cell == tile_empty or Map.get_cell_autotile_coord(x, x_y.y) != Vector2(1, 1):
-      Map.set_cell(x, x_y.y, tile_rooms)
+    if cell == tile_empty: #or Map.get_cell_autotile_coord(x, x_y.y) != Vector2(1, 1):
+      Map.set_cell(x, x_y.y, tile_corridor)
       VisibilityMap.set_cell(x, x_y.y, -1)
       var solid_neighbors = false
       var floor_neighbors = false
@@ -280,8 +279,8 @@ func carve_path(pos1, pos2):
     last_cell = cell
   for y in range(pos1.y, pos2.y, y_diff):
     var cell = Map.get_cell(y_x.x, y)
-    if cell == tile_empty or Map.get_cell_autotile_coord(y_x.x, y) != Vector2(1, 1):
-      Map.set_cell(y_x.x, y, tile_rooms)
+    if cell == tile_empty: #or Map.get_cell_autotile_coord(y_x.x, y) != Vector2(1, 1):
+      Map.set_cell(y_x.x, y, tile_corridor)
       VisibilityMap.set_cell(y_x.x, y, -1)
       var solid_neighbors = false
       var floor_neighbors = false
