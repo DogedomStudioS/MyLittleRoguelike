@@ -97,6 +97,6 @@ func get_first_surrounding_node_in_group(position: Vector2, group: String):
       var origin_index = _index_for_tile(origin + Vector2(x, y))
       if origin_index in tile_contents:
         for node in tile_contents[origin_index]:
-          if node.is_in_group(group):
+          if node != null and is_instance_valid(node) and node.is_in_group(group):
             return node
   return null

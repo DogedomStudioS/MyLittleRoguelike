@@ -26,7 +26,7 @@ var door_candidates = []
 var tile_rooms = 47
 var tile_empty = 52
 var tile_threshold = 50
-var tile_corridor = 51
+var tile_corridor = 53
 var initial_creatures = 9
 
 const GREEN_APPLE_CHANCE = 0.15
@@ -167,6 +167,7 @@ func make_map():
 
   # Carve rooms
   var corridors = []
+  var paths = []
   for room in $Rooms.get_children():
     var s = (room.size / tile_size).floor()
     var ul = (room.position / tile_size).floor() - s
@@ -190,6 +191,12 @@ func make_map():
         Map.add_to_tile(new_creature, Map.world_to_map(new_creature.position))
     # Carve connecting corridor
     var p = path.get_closest_point(room.position)
+    paths.append(p)
+  
+  Map.update_dirty_quadrants()
+  Map.update_bitmask_region(topleft, bottomright)
+
+  for p in paths:
     for conn in path.get_point_connections(p):
       if not conn in corridors:
         var start = Map.world_to_map(
@@ -200,8 +207,30 @@ func make_map():
         )
         carve_path(start, end)
     corridors.append(p)
+  
   Map.update_bitmask_region(topleft, bottomright)
+  for x in range(topleft.x, bottomright.x):
+    for y in range(topleft.y, bottomright.y):
+      var autotile = Map.get_cell_autotile_coord(x, y)
+      if autotile == Vector2(0, 2) or autotile == Vector2(1, 2) or autotile == Vector2(2, 2):
+        var new_obstacle = Obstacle.instance()
+        new_obstacle.map = Map
+        Map.add_child(new_obstacle)
+        new_obstacle.position = (
+          Map.map_to_world(Vector2(x, y)).snapped(Vector2.ONE * tile_size)
+          + Vector2(tile_size / 2, tile_size / 2)
+        )
+        Map.add_to_tile(new_obstacle, Map.world_to_map(new_obstacle.position))
   for door in door_candidates:
+    var new_door = Door.instance()
+    new_door.map = Map
+    Map.add_child(new_door)
+    new_door.position = (
+      Map.map_to_world(door).snapped(Vector2.ONE * tile_size)
+      + Vector2(tile_size / 2, tile_size / 2)
+    )
+    Map.add_to_tile(new_door, Map.world_to_map(new_door.position))
+    pass
     # N, E, S, W
     var neighbors = [
       Map.get_cell(door.x, door.y - 1),
@@ -209,21 +238,7 @@ func make_map():
       Map.get_cell(door.x, door.y + 1),
       Map.get_cell(door.x - 1, door.y)
     ]
-    # first check for exactly one floor neighbor
-    var floor_neighbors = 0
-    #var valid_walls = false
-    for tile in neighbors:
-      if tile == tile_rooms:
-        floor_neighbors += 1
-    if floor_neighbors == 2:
-      var new_door = Door.instance()
-      new_door.map = Map
-      Map.add_child(new_door)
-      new_door.position = (
-        Map.map_to_world(door).snapped(Vector2.ONE * tile_size)
-        + Vector2(tile_size / 2, tile_size / 2)
-      )
-      Map.add_to_tile(new_door, Map.world_to_map(new_door.position))
+  
   Player.position = (
     start_room.position.snapped(Vector2.ONE * tile_size)
     + Vector2(tile_size / 2, tile_size / 2)
@@ -259,39 +274,29 @@ func carve_path(pos1, pos2):
     x_y = pos2
     y_x = pos1
   var last_cell
+  var placed_corridor = false
   for x in range(pos1.x, pos2.x, x_diff):
     var cell = Map.get_cell(x, x_y.y)
+    placed_corridor = false
     if not last_cell:
       last_cell = cell
     if cell == tile_empty: #or Map.get_cell_autotile_coord(x, x_y.y) != Vector2(1, 1):
       Map.set_cell(x, x_y.y, tile_corridor)
       VisibilityMap.set_cell(x, x_y.y, -1)
-      var solid_neighbors = false
-      var floor_neighbors = false
-      if Map.get_cell(x, x_y.y - 1) == tile_empty and Map.get_cell(x, x_y.y + 1) == tile_empty:
-        solid_neighbors = true
-      var left_neighbor = Map.get_cell(x - 1, x_y.y)
-      var right_neighbor = Map.get_cell(x + 1, x_y.y)
-      if left_neighbor == tile_rooms or right_neighbor == tile_rooms:
-        floor_neighbors = true
-      if solid_neighbors and floor_neighbors:
-        door_candidates.append(Vector2(x, x_y.y))
-    last_cell = cell
+      placed_corridor = true
+    elif (cell == tile_rooms and last_cell == tile_corridor):
+      door_candidates.append(Vector2(x, x_y.y))
+    last_cell = tile_corridor if placed_corridor else cell
   for y in range(pos1.y, pos2.y, y_diff):
     var cell = Map.get_cell(y_x.x, y)
+    placed_corridor = false
     if cell == tile_empty: #or Map.get_cell_autotile_coord(y_x.x, y) != Vector2(1, 1):
       Map.set_cell(y_x.x, y, tile_corridor)
       VisibilityMap.set_cell(y_x.x, y, -1)
-      var solid_neighbors = false
-      var floor_neighbors = false
-      if Map.get_cell(y_x.x - 1, y) == tile_empty and Map.get_cell(y_x.x + 1, y) == tile_empty:
-        solid_neighbors = true
-      var north_neighbor = Map.get_cell(y_x.x, y - 1)
-      var south_neighbor = Map.get_cell(y_x.x, y + 1)
-      if north_neighbor == tile_rooms or south_neighbor == tile_rooms:
-        floor_neighbors = true
-      if solid_neighbors and floor_neighbors:
-        door_candidates.append(Vector2(y_x.x, y))
+      placed_corridor = true
+    elif (cell == tile_rooms and last_cell == tile_corridor):
+      door_candidates.append(Vector2(y_x.x, y))
+    last_cell = tile_corridor if placed_corridor else cell
 
 
 func find_start_room():

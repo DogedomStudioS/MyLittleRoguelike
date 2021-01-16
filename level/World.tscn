@@ -1,7 +1,7 @@
-[gd_scene load_steps=18 format=2]
+[gd_scene load_steps=28 format=2]
 
 [ext_resource path="res://level/World.gd" type="Script" id=1]
-[ext_resource path="res://assets/tilesets/tileset_color_blocks.tres" type="TileSet" id=2]
+[ext_resource path="res://assets/sprites/threshold.png" type="Texture" id=2]
 [ext_resource path="res://level/Input.gd" type="Script" id=3]
 [ext_resource path="res://Player.tscn" type="PackedScene" id=4]
 [ext_resource path="res://assets/tilesets/fog_of_war.tres" type="TileSet" id=5]
@@ -14,6 +14,7 @@
 [ext_resource path="res://Downstairs.tscn" type="PackedScene" id=12]
 [ext_resource path="res://assets/sprites/grass_tile.png" type="Texture" id=13]
 [ext_resource path="res://assets/sprites/corridor.png" type="Texture" id=14]
+[ext_resource path="res://assets/tilesets/tileset_color_blocks.png" type="Texture" id=15]
 
 [sub_resource type="ConvexPolygonShape2D" id=1]
 points = PoolVector2Array( 0, 0, 32, 0, 32, 32, 0, 32 )
@@ -55,7 +56,191 @@ points = PoolVector2Array( 0, 0, 32, 0, 32, 32, 0, 32 )
 1/shapes = [  ]
 1/z_index = 0
 
-[sub_resource type="RectangleShape2D" id=3]
+[sub_resource type="ConvexPolygonShape2D" id=9]
+points = PoolVector2Array( 32, 32, 0, 32, 0.191589, 20.9406, 32, 21.1649 )
+
+[sub_resource type="ConvexPolygonShape2D" id=10]
+points = PoolVector2Array( 32, 32, 0, 32, 0.00264359, 21.1649, 32, 21.0527 )
+
+[sub_resource type="ConvexPolygonShape2D" id=3]
+points = PoolVector2Array( 32, 32, 0, 32, 0, 21.1221, 31.7653, 21.1221 )
+
+[sub_resource type="ConvexPolygonShape2D" id=4]
+points = PoolVector2Array( 0, 0, 32, 0, 32, 32, 0, 32 )
+
+[sub_resource type="ConvexPolygonShape2D" id=5]
+points = PoolVector2Array( 0, 0, 32, 0, 32, 32, 0, 32 )
+
+[sub_resource type="ConvexPolygonShape2D" id=6]
+points = PoolVector2Array( 0, 0, 32, 0, 32, 32, 0, 32 )
+
+[sub_resource type="ConvexPolygonShape2D" id=7]
+points = PoolVector2Array( 32, 32, 0, 32, 0, 0, 32, 0 )
+
+[sub_resource type="GDScript" id=8]
+script/source = "tool
+extends TileSet
+
+const ROOMS = 47
+const CORRIDORS = 53
+
+var binds = {
+  ROOMS: [CORRIDORS],
+  CORRIDORS: [ROOMS]
+}
+
+func _is_tile_bound(drawn_id, neighbor_id):
+  if drawn_id in binds:
+    return neighbor_id in binds[drawn_id]
+  return false
+"
+
+[sub_resource type="TileSet" id=11]
+resource_local_to_scene = true
+47/name = "tileset_color_blocks.png 47"
+47/texture = ExtResource( 15 )
+47/tex_offset = Vector2( 0, 0 )
+47/modulate = Color( 1, 1, 1, 1 )
+47/region = Rect2( 0, 0, 352, 160 )
+47/tile_mode = 1
+47/autotile/bitmask_mode = 1
+47/autotile/bitmask_flags = [ Vector2( 0, 0 ), 432, Vector2( 0, 1 ), 438, Vector2( 0, 2 ), 54, Vector2( 0, 3 ), 48, Vector2( 1, 0 ), 504, Vector2( 1, 1 ), 511, Vector2( 1, 2 ), 63, Vector2( 1, 3 ), 56, Vector2( 2, 0 ), 216, Vector2( 2, 1 ), 219, Vector2( 2, 2 ), 27, Vector2( 2, 3 ), 24, Vector2( 3, 0 ), 144, Vector2( 3, 1 ), 146, Vector2( 3, 2 ), 18, Vector2( 3, 3 ), 16, Vector2( 4, 0 ), 176, Vector2( 4, 1 ), 182, Vector2( 4, 2 ), 434, Vector2( 4, 3 ), 50, Vector2( 4, 4 ), 178, Vector2( 5, 0 ), 248, Vector2( 5, 1 ), 255, Vector2( 5, 2 ), 507, Vector2( 5, 3 ), 59, Vector2( 5, 4 ), 251, Vector2( 6, 0 ), 440, Vector2( 6, 1 ), 447, Vector2( 6, 2 ), 510, Vector2( 6, 3 ), 62, Vector2( 6, 4 ), 446, Vector2( 7, 0 ), 152, Vector2( 7, 1 ), 155, Vector2( 7, 2 ), 218, Vector2( 7, 3 ), 26, Vector2( 7, 4 ), 154, Vector2( 8, 0 ), 184, Vector2( 8, 1 ), 191, Vector2( 8, 2 ), 506, Vector2( 8, 3 ), 58, Vector2( 8, 4 ), 186, Vector2( 9, 0 ), 443, Vector2( 9, 1 ), 254, Vector2( 9, 2 ), 442, Vector2( 9, 3 ), 190, Vector2( 10, 2 ), 250, Vector2( 10, 3 ), 187 ]
+47/autotile/icon_coordinate = Vector2( 3, 3 )
+47/autotile/tile_size = Vector2( 32, 32 )
+47/autotile/spacing = 0
+47/autotile/occluder_map = [  ]
+47/autotile/navpoly_map = [  ]
+47/autotile/priority_map = [  ]
+47/autotile/z_index_map = [  ]
+47/occluder_offset = Vector2( 0, 0 )
+47/navigation_offset = Vector2( 0, 0 )
+47/shape_offset = Vector2( 0, 0 )
+47/shape_transform = Transform2D( 1, 0, 0, 1, 0, 0 )
+47/shape = SubResource( 9 )
+47/shape_one_way = false
+47/shape_one_way_margin = 1.0
+47/shapes = [ {
+"autotile_coord": Vector2( 2, 2 ),
+"one_way": false,
+"one_way_margin": 1.0,
+"shape": SubResource( 9 ),
+"shape_transform": Transform2D( 1, 0, 0, 1, 0, 0 )
+}, {
+"autotile_coord": Vector2( 1, 2 ),
+"one_way": false,
+"one_way_margin": 1.0,
+"shape": SubResource( 10 ),
+"shape_transform": Transform2D( 1, 0, 0, 1, 0, 0 )
+}, {
+"autotile_coord": Vector2( 0, 2 ),
+"one_way": false,
+"one_way_margin": 1.0,
+"shape": SubResource( 3 ),
+"shape_transform": Transform2D( 1, 0, 0, 1, 0, 0 )
+}, {
+"autotile_coord": Vector2( 0, 0 ),
+"one_way": false,
+"one_way_margin": 1.0,
+"shape": SubResource( 4 ),
+"shape_transform": Transform2D( 1, 0, 0, 1, 0, 0 )
+}, {
+"autotile_coord": Vector2( 1, 0 ),
+"one_way": false,
+"one_way_margin": 1.0,
+"shape": SubResource( 5 ),
+"shape_transform": Transform2D( 1, 0, 0, 1, 0, 0 )
+}, {
+"autotile_coord": Vector2( 2, 0 ),
+"one_way": false,
+"one_way_margin": 1.0,
+"shape": SubResource( 6 ),
+"shape_transform": Transform2D( 1, 0, 0, 1, 0, 0 )
+} ]
+47/z_index = 0
+48/name = "tileset_color_blocks.png 48"
+48/texture = ExtResource( 15 )
+48/tex_offset = Vector2( 0, 0 )
+48/modulate = Color( 1, 1, 1, 1 )
+48/region = Rect2( 0, 0, 352, 160 )
+48/tile_mode = 1
+48/autotile/bitmask_mode = 1
+48/autotile/bitmask_flags = [ Vector2( 2, 0 ), 511 ]
+48/autotile/icon_coordinate = Vector2( 2, 0 )
+48/autotile/tile_size = Vector2( 32, 32 )
+48/autotile/spacing = 0
+48/autotile/occluder_map = [  ]
+48/autotile/navpoly_map = [  ]
+48/autotile/priority_map = [  ]
+48/autotile/z_index_map = [  ]
+48/occluder_offset = Vector2( 0, 0 )
+48/navigation_offset = Vector2( 0, 0 )
+48/shape_offset = Vector2( 0, 0 )
+48/shape_transform = Transform2D( 1, 0, 0, 1, 0, 0 )
+48/shape_one_way = false
+48/shape_one_way_margin = 0.0
+48/shapes = [  ]
+48/z_index = 0
+50/name = "threshold.png 50"
+50/texture = ExtResource( 2 )
+50/tex_offset = Vector2( 0, 0 )
+50/modulate = Color( 1, 1, 1, 1 )
+50/region = Rect2( 0, 0, 32, 32 )
+50/tile_mode = 0
+50/occluder_offset = Vector2( 0, 0 )
+50/navigation_offset = Vector2( 0, 0 )
+50/shape_offset = Vector2( 0, 0 )
+50/shape_transform = Transform2D( 1, 0, 0, 1, 0, 0 )
+50/shape_one_way = false
+50/shape_one_way_margin = 0.0
+50/shapes = [  ]
+50/z_index = 0
+52/name = "grass_tile.png 52"
+52/texture = ExtResource( 13 )
+52/tex_offset = Vector2( 0, 0 )
+52/modulate = Color( 1, 1, 1, 1 )
+52/region = Rect2( 0, 0, 32, 32 )
+52/tile_mode = 0
+52/occluder_offset = Vector2( 0, 0 )
+52/navigation_offset = Vector2( 0, 0 )
+52/shape_offset = Vector2( 0, 0 )
+52/shape_transform = Transform2D( 1, 0, 0, 1, 0, 0 )
+52/shape = SubResource( 7 )
+52/shape_one_way = false
+52/shape_one_way_margin = 1.0
+52/shapes = [ {
+"autotile_coord": Vector2( 0, 0 ),
+"one_way": false,
+"one_way_margin": 1.0,
+"shape": SubResource( 7 ),
+"shape_transform": Transform2D( 1, 0, 0, 1, 0, 0 )
+} ]
+52/z_index = 0
+53/name = "corridor.png 53"
+53/texture = ExtResource( 14 )
+53/tex_offset = Vector2( 0, 0 )
+53/modulate = Color( 1, 1, 1, 1 )
+53/region = Rect2( 0, 0, 32, 32 )
+53/tile_mode = 1
+53/autotile/bitmask_mode = 1
+53/autotile/bitmask_flags = [ Vector2( 0, 0 ), 511 ]
+53/autotile/icon_coordinate = Vector2( 0, 0 )
+53/autotile/tile_size = Vector2( 32, 32 )
+53/autotile/spacing = 0
+53/autotile/occluder_map = [  ]
+53/autotile/navpoly_map = [  ]
+53/autotile/priority_map = [  ]
+53/autotile/z_index_map = [  ]
+53/occluder_offset = Vector2( 0, 0 )
+53/navigation_offset = Vector2( 0, 0 )
+53/shape_offset = Vector2( 0, 0 )
+53/shape_transform = Transform2D( 1, 0, 0, 1, 0, 0 )
+53/shape_one_way = false
+53/shape_one_way_margin = 0.0
+53/shapes = [  ]
+53/z_index = 0
+script = SubResource( 8 )
+
+[sub_resource type="RectangleShape2D" id=12]
 extents = Vector2( 15, 15 )
 
 [node name="Root" type="ViewportContainer"]
@@ -97,7 +282,7 @@ format = 1
 
 [node name="TileMap" type="TileMap" parent="Game/World/Navigation2D"]
 show_behind_parent = true
-tile_set = ExtResource( 2 )
+tile_set = SubResource( 11 )
 cell_size = Vector2( 32, 32 )
 cell_custom_transform = Transform2D( 0, 0, 0, 0, 0, 0 )
 cell_y_sort = true
@@ -120,7 +305,7 @@ collision_layer = 512
 collision_mask = 512
 
 [node name="Player Eyes Collider" type="CollisionShape2D" parent="Game/World/Player Eyes"]
-shape = SubResource( 3 )
+shape = SubResource( 12 )
 
 [node name="FogOfWar" type="TileMap" parent="Game/World"]
 tile_set = ExtResource( 5 )
@@ -142,7 +327,6 @@ render_target_update_mode = 3
 [node name="UI" parent="UIViewport" instance=ExtResource( 8 )]
 
 [node name="Inventory" parent="UIViewport" instance=ExtResource( 9 )]
-visible = false
 
 [node name="Loading" parent="UIViewport" instance=ExtResource( 10 )]
 

@@ -45,6 +45,7 @@ func _is_tile_bound(drawn_id, neighbor_id):
 "
 
 [resource]
+resource_local_to_scene = true
 47/name = "tileset_color_blocks.png 47"
 47/texture = ExtResource( 1 )
 47/tex_offset = Vector2( 0, 0 )
@@ -59,7 +60,7 @@ func _is_tile_bound(drawn_id, neighbor_id):
 47/autotile/occluder_map = [  ]
 47/autotile/navpoly_map = [  ]
 47/autotile/priority_map = [  ]
-47/autotile/z_index_map = [ Vector3( 0, 2, 2 ), Vector3( 1, 2, 2 ), Vector3( 2, 2, 2 ), Vector3( 8, 1, 2 ) ]
+47/autotile/z_index_map = [ Vector3( 0, 2, 2 ), Vector3( 2, 2, 2 ) ]
 47/occluder_offset = Vector2( 0, 0 )
 47/navigation_offset = Vector2( 0, 0 )
 47/shape_offset = Vector2( 0, 0 )
