@@ -23,6 +23,8 @@ func update_visibility():
           node.set_visible(visible)
           if (visible):
             fog_of_war.set_cellv(fog_of_war.world_to_map(node.position), -1)
+        elif node.is_in_group(Constants.GROUPS.STRUCTURES):
+          node.set_visible(true)
         else:
           node.set_visible(fog_of_war.get_cellv(fog_of_war.world_to_map(node.position)) != 0)
 
@@ -41,10 +43,16 @@ func add_to_tile(node: Node2D, destination: Vector2, origin: Vector2 = Vector2(-
   var destination_index = _index_for_tile(destination)
   if origin.x > -1 and origin.y > -1:
     var origin_index = _index_for_tile(origin)
+    for object in tile_contents[origin_index]:
+      if object != null and is_instance_valid(object) and object.has_method("tile_abandoned"):
+        object.tile_abandoned(node)
     var index = tile_contents[origin_index].find(node)
     if index > -1:
       tile_contents[origin_index].remove(index)
   if destination_index in tile_contents:
+    for object in tile_contents[destination_index]:
+      if object != null and is_instance_valid(object) and object.has_method("tile_occupied"):
+        object.tile_occupied(node)
     tile_contents[destination_index].append(node)
   else:
     tile_contents[destination_index] = [node]
@@ -56,6 +64,10 @@ func remove_from_tile(node: Node2D, tile: Vector2):
     var index = tile_contents[tile_index].find(node)
     if index > -1:
       tile_contents[tile_index].remove(index)
+      var contents = tile_contents[tile_index]
+      for object in contents:
+        if object != null and is_instance_valid(object) and object.has_method("tile_abandoned"):
+          object.tile_abandoned(node)
 
 
 func get_tile_contents(tile: Vector2):

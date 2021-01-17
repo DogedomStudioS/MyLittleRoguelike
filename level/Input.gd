@@ -49,30 +49,50 @@ func _physics_process(delta):
   velocity = Vector2(0, 0)
   if Input.is_action_just_pressed("move_north"):
     direction = 'up'
-  if Input.is_action_just_pressed("move_south"):
-    direction = 'down'
+  if Input.is_action_just_pressed("move_northeast"):
+    direction = 'up_right'
   if Input.is_action_just_pressed("move_east"):
     direction = 'right'
+  if Input.is_action_just_pressed("move_southeast"):
+    direction = 'down_right'
+  if Input.is_action_just_pressed("move_south"):
+    direction = 'down'
+  if Input.is_action_just_pressed("move_southwest"):
+    direction = 'down_left'
   if Input.is_action_just_pressed("move_west"):
     direction = 'left'
+  if Input.is_action_just_pressed("move_northwest"):
+    direction = 'up_left'
 
   if (
     Input.is_action_pressed("move_north")
+    or Input.is_action_pressed("move_northeast")
     or Input.is_action_pressed("move_east")
+    or Input.is_action_pressed("move_southeast")
     or Input.is_action_pressed("move_south")
+    or Input.is_action_pressed("move_southwest")
     or Input.is_action_pressed("move_west")
+    or Input.is_action_pressed("move_northwest")
   ):
     time_since_move += delta
     if time_since_move > MOVE_RETRY_DELAY:
       time_since_move = 0.0
       if Input.is_action_pressed("move_north"):
         direction = 'up'
+      if Input.is_action_pressed("move_northeast"):
+        direction = 'up_right'
+      if Input.is_action_pressed("move_east"):
+        direction = "right"
+      if Input.is_action_pressed("move_southeast"):
+        direction = "down_right"
       if Input.is_action_pressed("move_south"):
         direction = 'down'
-      if Input.is_action_pressed("move_east"):
-        direction = 'right'
+      if Input.is_action_pressed("move_southwest"):
+        direction = 'down_left'
       if Input.is_action_pressed("move_west"):
         direction = 'left'
+      if Input.is_action_pressed("move_northwest"):
+        direction = 'up_left'
   else:
     time_since_move = 0.0
   if current_player and direction:

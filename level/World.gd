@@ -11,7 +11,13 @@ onready var Loading = $"../../UIViewport/Loading"
 var Creature = preload("../actors/Creature.tscn")
 var GreenApple = preload("../actors/GreenApple.tscn")
 var Obstacle = preload("../actors/Obstacle.tscn")
-var Door = preload("../actors/Door.tscn")
+var South_Wall_Mid = preload("../actors/South_Wall_Mid.tscn")
+var South_Wall_Left = preload("../actors/South_Wall_Left.tscn")
+var South_Wall_Right = preload("../actors/South_Wall_Right.tscn")
+var Door_N = preload("../actors/Door_N.tscn")
+var Door_S = preload("../actors/Door_S.tscn")
+var Door_E = preload("../actors/Door_E.tscn")
+var Door_W = preload("../actors/Door_W.tscn")
 
 var debug_draw = false
 var debug_map_generation = false
@@ -213,24 +219,21 @@ func make_map():
     for y in range(topleft.y, bottomright.y):
       var autotile = Map.get_cell_autotile_coord(x, y)
       if autotile == Vector2(0, 2) or autotile == Vector2(1, 2) or autotile == Vector2(2, 2):
-        var new_obstacle = Obstacle.instance()
-        new_obstacle.map = Map
-        Map.add_child(new_obstacle)
-        new_obstacle.position = (
+        var new_south_wall
+        if autotile == Vector2(0, 2):
+          new_south_wall = South_Wall_Left.instance()
+        elif autotile == Vector2(2, 2):
+          new_south_wall = South_Wall_Right.instance()
+        else:
+          new_south_wall = South_Wall_Mid.instance()
+        new_south_wall.map = Map
+        Map.add_child(new_south_wall)
+        new_south_wall.position = (
           Map.map_to_world(Vector2(x, y)).snapped(Vector2.ONE * tile_size)
           + Vector2(tile_size / 2, tile_size / 2)
         )
-        Map.add_to_tile(new_obstacle, Map.world_to_map(new_obstacle.position))
+        Map.add_to_tile(new_south_wall, Map.world_to_map(new_south_wall.position))
   for door in door_candidates:
-    var new_door = Door.instance()
-    new_door.map = Map
-    Map.add_child(new_door)
-    new_door.position = (
-      Map.map_to_world(door).snapped(Vector2.ONE * tile_size)
-      + Vector2(tile_size / 2, tile_size / 2)
-    )
-    Map.add_to_tile(new_door, Map.world_to_map(new_door.position))
-    pass
     # N, E, S, W
     var neighbors = [
       Map.get_cell(door.x, door.y - 1),
@@ -238,6 +241,30 @@ func make_map():
       Map.get_cell(door.x, door.y + 1),
       Map.get_cell(door.x - 1, door.y)
     ]
+    var corridor_neighbors = 0
+    var neighbor_index = 0
+    var new_door = null
+    for i in range (0, neighbors.size()):
+      if neighbors[i] == tile_corridor:
+        corridor_neighbors += 1
+        neighbor_index = i
+    if corridor_neighbors == 1:
+      if neighbor_index == 0:
+        new_door = Door_N.instance()
+      elif neighbor_index == 1:
+        new_door = Door_E.instance()
+      elif neighbor_index == 2:
+        new_door = Door_S.instance()
+      elif neighbor_index == 3:
+        new_door = Door_W.instance()
+    if new_door and not Map.is_location_occupied(door):
+      new_door.map = Map
+      Map.add_child(new_door)
+      new_door.position = (
+        Map.map_to_world(door).snapped(Vector2.ONE * tile_size)
+        + Vector2(tile_size / 2, tile_size / 2) + Vector2(0, 8)
+      )
+      Map.add_to_tile(new_door, Map.world_to_map(new_door.position))
   
   Player.position = (
     start_room.position.snapped(Vector2.ONE * tile_size)

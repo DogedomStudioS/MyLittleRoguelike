@@ -5,12 +5,19 @@ var nice_name = "Door"
 var map: TileMap
 var closed = true
 
+onready var sprite: AnimatedSprite = $AnimatedSprite
+
 func _ready():
   add_to_group(Constants.GROUPS.DOORS)
   if closed:
+    sprite.play("closed")
     add_to_group(Constants.GROUPS.OBSTACLES)
     collision_mask = obstacle_collision_layer
     collision_layer = obstacle_collision_layer
+  else:
+    sprite.play("open")
+    collision_mask = 0
+    collision_layer = 0
 
 func handle_action(action):
   if !("type" in action):
@@ -26,18 +33,18 @@ func toggle_door():
     _close_door()
 
 func _open_door():
-  $Sprite.modulate.a = 0.4
+  sprite.play("open")
   closed = false
   remove_from_group(Constants.GROUPS.OBSTACLES)
   collision_mask = 0
   collision_layer = 0
 
 func _close_door():
-  var tile_contents = map.get_tile_contents(map.world_to_map(position))
-  if tile_contents.size() > 1:
+  #var tile_contents = map.get_tile_contents(map.world_to_map(position))
+  #if tile_contents.size() > 1:
     #something else is blocking the door
-    return
-  $Sprite.modulate.a = 1.0
+  #  return
+  sprite.play("closed")
   closed = true
   add_to_group(Constants.GROUPS.OBSTACLES)
   collision_mask = obstacle_collision_layer

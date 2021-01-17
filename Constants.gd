@@ -5,7 +5,14 @@ onready var Random = preload("res://Random.gd").new()
 enum DICE { d4 = 4, d6 = 6, d8 = 8, d10 = 10, d12 = 12, d20 = 20 }
 
 var directions = {
-  "up": Vector2.UP, "right": Vector2.RIGHT, "down": Vector2.DOWN, "left": Vector2.LEFT
+  "up": Vector2.UP,
+  "up_right": Vector2.UP + Vector2.RIGHT,
+  "right": Vector2.RIGHT,
+  "down_right": Vector2.DOWN + Vector2.RIGHT,
+  "down": Vector2.DOWN,
+  "down_left": Vector2.DOWN + Vector2.LEFT,
+  "left": Vector2.LEFT,
+  "up_left": Vector2.UP + Vector2.LEFT
 }
 
 var GROUPS = {
@@ -16,7 +23,8 @@ var GROUPS = {
   'ITEMS': 'items',
   'TRAPS': 'traps',
   'OBSTACLES': 'obstacles',
-  'DOORS': 'doors'
+  'DOORS': 'doors',
+  'STRUCTURES': 'structures'
 }
 
 enum ITEM_TYPE { weapon, item, apple_piece }

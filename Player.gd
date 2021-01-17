@@ -34,9 +34,13 @@ func _ready():
   tile_mover.host = self
   tile_mover.tween = $Tween
   tile_mover.north_collider = $collider_north
+  tile_mover.northeast_collider = $collider_northeast
   tile_mover.east_collider = $collider_east
+  tile_mover.southeast_collider = $collider_southeast
   tile_mover.south_collider = $collider_south
+  tile_mover.southwest_collider = $collider_southwest
   tile_mover.west_collider = $collider_west
+  tile_mover.northwest_collider = $collider_northwest
   Scheduler.order_completion_handlers.append(self)
   if Game.player_carry_over:
     var carry_over = Game.player_carry_over

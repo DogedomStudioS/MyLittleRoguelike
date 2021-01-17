@@ -7,9 +7,13 @@ var tween_connected = false
 var tile_size = 32
 var moving = false
 var north_collider: RayCast2D
+var northeast_collider: RayCast2D
 var east_collider: RayCast2D
+var southeast_collider: RayCast2D
 var south_collider: RayCast2D
+var southwest_collider: RayCast2D
 var west_collider: RayCast2D
+var northwest_collider: RayCast2D
 var moves_queue = []
 var initialized = false
 var destination_index = -1
@@ -41,12 +45,20 @@ func check_blocked(direction):
   match direction:
     "up":
       blocked = north_collider.get_collider()
+    "up_left":
+      blocked = northwest_collider.get_collider()
     "left":
       blocked = west_collider.get_collider()
+    "down_left":
+      blocked = southwest_collider.get_collider()
     "down":
       blocked = south_collider.get_collider()
+    "down_right":
+      blocked = southeast_collider.get_collider()
     "right":
       blocked = east_collider.get_collider()
+    "up_right":
+      blocked = northeast_collider.get_collider()
   return blocked
 
 func move(direction: String):
@@ -56,7 +68,7 @@ func move(direction: String):
   if not map and host.get_parent().get_class() == 'TileMap':
     map = host.get_parent()
   if host.directional_animation:
-    host.get_node("Sprite/Body").frame = ["up", "right", "down", "left"].find(direction)
+    host.get_node("Sprite/Body").frame = ["up", "up_right", "right", "down_right", "down", "down_left", "left", "up_left"].find(direction)
   var destination = host.position + Constants.directions[direction] * tile_size
   var blocked = check_blocked(direction) or destination in map.claimed_move_targets
   if blocked:
