@@ -13,6 +13,7 @@ var modified_action_speed = 2.0
 var behaviors
 var is_player = false
 var directional_animation = false
+var last_action_time = 0
 
 func _ready():
   add_to_group(Constants.GROUPS.HOSTILES)
@@ -27,10 +28,13 @@ func _ready():
   tile_mover.south_collider = $collider_south
   tile_mover.west_collider = $collider_west
   behaviors = [wander]
-  Scheduler.submit(self, get_next_action())
+  Scheduler.entities.append(self)
+  #Scheduler.submit(self, get_next_action())
 
 func die():
-  tile_mover.map.remove_from_tile(self, tile_mover.map.world_to_map(self.position))
+  if tile_mover.map:
+    tile_mover.map.remove_from_tile(self, tile_mover.map.world_to_map(self.position))
+  Scheduler.remove_entity(self)
   queue_free()
 
 func handle_action(action):
@@ -38,7 +42,7 @@ func handle_action(action):
     behavior.handle_action(action)
   if action.type == 'attack':
     attack.attack(action.payload, false)
-  Scheduler.submit(self, get_next_action())
+  #Scheduler.submit(self, get_next_action())
 
 func get_next_action():
   if map:

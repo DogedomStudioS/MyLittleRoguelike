@@ -25,6 +25,7 @@ func _physics_process(_delta):
     update_visibility(last_center_tile)
     update()
     level_map.update_visibility()
+    shadow_map_dirty = false
   if world_to_map(player.position) != last_position:
     shadow_map_dirty = true
     space_state = get_world_2d().direct_space_state

@@ -5,13 +5,24 @@ onready var map = $"../Navigation2D/TileMap"
 onready var camera: Camera2D = $"../Camera"
 onready var inventory_overlay = $"../../../UIViewport/Inventory"
 onready var ingame_menu = $"../../../UIViewport/Menu"
+onready var fog_of_war = $"../FogOfWar"
 const MOVE_RETRY_DELAY = 0.21
 var time_since_move = 0.0
 var frozen_input = true
 
+var action_prompt_mode = false
+var action_prompt_action = {}
+var action_prompt_valid_group = null
+
 var speed = 200.0
 var velocity = Vector2(0, 0)
 
+func _door_opening_mode():
+  action_prompt_mode = true
+  action_prompt_action = {
+    "type": "toggle_door",
+    "player": true
+  }
 
 func _physics_process(delta):
   if frozen_input:
@@ -36,7 +47,7 @@ func _physics_process(delta):
   if Input.is_action_just_pressed("open_nearest_door"):
     var door = map.get_first_surrounding_node_in_group(current_player.position, Constants.GROUPS.DOORS)
     if door != null:
-      Scheduler.submit(
+      Scheduler.handle_player_action(
         door,
         {
           'type': 'toggle_door',
@@ -99,9 +110,11 @@ func _physics_process(delta):
     var world_position = map.world_to_map(current_player.position)
     var destination = world_position + Constants.directions[direction]
     var tile_contents = map.get_tile_contents(destination)
+    var did_attack = false
     for node in tile_contents:
       if is_instance_valid(node) and node.is_in_group(Constants.GROUPS.HOSTILES):
-        Scheduler.submit(
+        did_attack = true
+        Scheduler.handle_player_action(
           current_player,
           {
             'type': 'attack',
@@ -109,7 +122,7 @@ func _physics_process(delta):
             'player': true
           }
         )
-
-    Scheduler.submit(current_player, {'type': 'move', 'payload': direction, 'player': true})
+    if !did_attack:
+      Scheduler.handle_player_action(current_player, {'type': 'move', 'payload': direction, 'player': true})
   if is_instance_valid(current_player):
     camera.position = current_player.get_node("Sprite").global_position

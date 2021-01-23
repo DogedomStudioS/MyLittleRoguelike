@@ -80,6 +80,7 @@ func handle_action(action):
           "items": inventory.items
         }
         Scheduler.game_time = 0.0
+        Scheduler.entities = []
         Scheduler.order_queue = []
         Scheduler.resolvable_orders = []
         Scheduler.order_completion_handlers = []
