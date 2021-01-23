@@ -27,13 +27,21 @@ func add(item, you = false):
       pass
     Constants.ITEM_TYPE.apple_piece:
       pass
+    Constants.ITEM_TYPE.consumable:
+      items.append(item)
+      if you:
+        MessageLog.log("Picked up %s" % [item.label])
 
 func drop(item):
   pass
+
+func remove_item(index):
+  items.remove(index)
 
 func use(item):
   if item.type == Constants.ITEM_TYPE.weapon and "attack" in host:
     host.attack.arm_weapon(item, host.is_player)
   if item.type == Constants.ITEM_TYPE.item:
     pass
+
 

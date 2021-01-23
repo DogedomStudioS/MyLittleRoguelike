@@ -14,3 +14,18 @@ var weapons = {
     "properties": { "die": Constants.DICE.d4, "die_count": 2 }
   }
 }
+
+var items = {
+  "health_potion_small": {
+    "label": "Small Healthpack",
+    "icon": preload("res://assets/sprites/juice_box_pear.png"),
+    "type": Constants.ITEM_TYPE.consumable,
+    "properties": { "die": Constants.DICE.d6, "die_count": 1 },
+    "on_use": funcref(self, "_use_health_item")
+  }
+}
+
+func _use_health_item(target, item):
+  if target and "mortality" in target:
+    var damage = Constants.roll_dice(item.properties.die, item.properties.die_count)
+    target.mortality.heal(damage, true)

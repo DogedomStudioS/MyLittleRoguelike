@@ -15,6 +15,12 @@ var directions = {
   "up_left": Vector2.UP + Vector2.LEFT
 }
 
+var COLLISION_LAYERS = {
+  "SOLID": 1,
+  "OBSTACLE": 512,
+  "DOOR": 1024
+}
+
 var GROUPS = {
   'HOSTILES': 'hostiles',
   'ALLIES': 'allies',
@@ -27,7 +33,7 @@ var GROUPS = {
   'STRUCTURES': 'structures'
 }
 
-enum ITEM_TYPE { weapon, item, apple_piece }
+enum ITEM_TYPE { weapon, item, consumable, apple_piece }
 
 
 func roll_dice(die, count: int):

@@ -11,6 +11,7 @@ onready var Loading = $"../../UIViewport/Loading"
 var Creature = preload("../actors/Creature.tscn")
 var GreenApple = preload("../actors/GreenApple.tscn")
 var Obstacle = preload("../actors/Obstacle.tscn")
+var PearJuiceBox = preload("../actors/pickups/Juice_Box_Pear.tscn")
 var South_Wall_Mid = preload("../actors/South_Wall_Mid.tscn")
 var South_Wall_Left = preload("../actors/South_Wall_Left.tscn")
 var South_Wall_Right = preload("../actors/South_Wall_Right.tscn")
@@ -34,6 +35,7 @@ var tile_empty = 52
 var tile_threshold = 50
 var tile_corridor = 53
 var initial_creatures = 9
+var initial_pickups = 30
 
 const GREEN_APPLE_CHANCE = 0.15
 const CREATURE_SPAWN_TIME = 45
@@ -51,6 +53,7 @@ func _ready():
   randomize()
   make_rooms()
   setup_message_log()
+  Scheduler.entities = []
   Scheduler.order_completion_handlers.append(self)
   if Game.current_floor == 1:
     MessageLog.log("Welcome to Apples Versus Oranges!")
@@ -195,6 +198,20 @@ func make_map():
           + Vector2(tile_size / 2, tile_size / 2)
         )
         Map.add_to_tile(new_creature, Map.world_to_map(new_creature.position))
+    if initial_pickups > 0:
+      initial_pickups -= 1
+      var tile = Vector2(
+        (randi() % int(s.x) * 2 - 1) + int(ul.x), (randi() % int(s.y) * 2 - 1) + int(ul.y)
+      )
+      if Map.get_cell(tile.x, tile.y) == tile_rooms:
+        var new_pickup = PearJuiceBox.instance()
+        new_pickup.map = Map
+        Map.add_child(new_pickup)
+        new_pickup.position = (
+          Map.map_to_world(tile).snapped(Vector2.ONE * tile_size)
+          + Vector2(tile_size / 2, tile_size / 2)
+        )
+        Map.add_to_tile(new_pickup, Map.world_to_map(new_pickup.position))
     # Carve connecting corridor
     var p = path.get_closest_point(room.position)
     paths.append(p)

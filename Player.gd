@@ -27,6 +27,7 @@ func _ready():
   add_to_group(Constants.GROUPS.PLAYER)
   inventory.host = self
   inventory.add(Items.weapons.club)
+  inventory.add(Items.items.health_potion_small)
   attack.host = self
   mortality.host = self
   mortality.max_hitpoints = 30
@@ -50,6 +51,8 @@ func _ready():
     level = carry_over.level
     last_movement_exp_gain_time = carry_over.last_movement_exp_gain_time
     last_health_regeneration_time = carry_over.last_health_regeneration_time
+    inventory.weapons = carry_over.weapons
+    inventory.items = carry_over.items
     attack.arm_weapon(carry_over.weapon, false)
 
   
