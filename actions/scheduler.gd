@@ -9,7 +9,8 @@ var entities = []
 const order_times = {
     "move": 100,
     "attack": 75,
-    "toggle_door": 0
+    "pickup": 50,
+    "toggle_door": 50
 }
 
 func remove_entity(removed_entity):

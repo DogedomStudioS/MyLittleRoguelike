@@ -33,7 +33,7 @@ var door_candidates = []
 var tile_rooms = 47
 var tile_empty = 52
 var tile_threshold = 50
-var tile_corridor = 53
+var tile_corridor = 54 #53
 var initial_creatures = 9
 var initial_pickups = 30
 
@@ -231,6 +231,7 @@ func make_map():
         carve_path(start, end)
     corridors.append(p)
   
+  Map.update_dirty_quadrants()
   Map.update_bitmask_region(topleft, bottomright)
   for x in range(topleft.x, bottomright.x):
     for y in range(topleft.y, bottomright.y):

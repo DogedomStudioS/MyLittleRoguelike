@@ -15,12 +15,12 @@ var dead = false
 
 var experience = 0
 var level = 1
-const EXP_PER_LEVEL = 45
-var moves_per_exp = 4
+const EXP_PER_LEVEL = 150
+var moves_per_exp = 100
 var last_movement_exp_gain_time = 0.0
 
 const HITPOINTS_PER_LEVEL = 3
-const HEALTH_REGENERATION_DELAY = 15
+const HEALTH_REGENERATION_DELAY = 45
 var last_health_regeneration_time = 0.0
 
 func _ready():
@@ -62,6 +62,27 @@ func die():
   $Sprite.set_visible(false)
   $"../../../../../UIViewport/Menu".set_visible(true)
 
+func change_level(floor_number: int):
+  Game.current_floor = floor_number
+  Game.player_carry_over = {
+    "hitpoints": mortality.hitpoints,
+    "max_hp": mortality.max_hitpoints,
+    "experience": experience,
+    "level": level,
+    "last_movement_exp_gain_time": last_movement_exp_gain_time,
+    "last_health_regeneration_time": last_health_regeneration_time,
+    "weapon": attack.weapon,
+    "weapons": inventory.weapons,
+    "items": inventory.items
+  }
+  Scheduler.game_time = 0.0
+  Scheduler.entities = []
+  Scheduler.order_queue = []
+  Scheduler.resolvable_orders = []
+  Scheduler.order_completion_handlers = []
+  MessageLog.messages = []
+  get_tree().change_scene("res://level/World.tscn")
+
 func handle_action(action):
   if !("type" in action):
     pass
@@ -69,28 +90,9 @@ func handle_action(action):
     "move":
       tile_mover.move(action.payload)
       if get_parent().check_for_node_at_location(get_parent().Downstairs, position):
-        print("on the downstairs!")
-        Game.current_floor += 1
-        Game.player_carry_over = {
-          "hitpoints": mortality.hitpoints,
-          "max_hp": mortality.max_hitpoints,
-          "experience": experience,
-          "level": level,
-          "last_movement_exp_gain_time": last_movement_exp_gain_time,
-          "last_health_regeneration_time": last_health_regeneration_time,
-          "weapon": attack.weapon,
-          "weapons": inventory.weapons,
-          "items": inventory.items
-        }
-        Scheduler.game_time = 0.0
-        Scheduler.entities = []
-        Scheduler.order_queue = []
-        Scheduler.resolvable_orders = []
-        Scheduler.order_completion_handlers = []
-        MessageLog.messages = []
-        get_tree().change_scene("res://level/World.tscn")
+        change_level(Game.current_floor + 1)
     "attack":
-      experience += 5
+      experience += 1
       attack.attack(action.payload, true)
     "wield":
       attack.arm_weapon(action.payload, true)
@@ -104,7 +106,7 @@ func orders_handled(game_time):
     mortality.hitpoints += 1
     if mortality.hitpoints > mortality.max_hitpoints:
       mortality.hitpoints = mortality.max_hitpoints
-  if experience > EXP_PER_LEVEL + (level * EXP_PER_LEVEL):
+  if experience > EXP_PER_LEVEL + (level * EXP_PER_LEVEL * 0.3):
     level += 1
     MessageLog.log("You gained a level! Welcome to level %d" % [level])
     if level % 2 == 0:

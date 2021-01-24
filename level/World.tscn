@@ -1,4 +1,4 @@
-[gd_scene load_steps=56 format=2]
+[gd_scene load_steps=51 format=2]
 
 [ext_resource path="res://level/World.gd" type="Script" id=1]
 [ext_resource path="res://assets/sprites/threshold.png" type="Texture" id=2]
@@ -15,6 +15,7 @@
 [ext_resource path="res://assets/sprites/grass_tile.png" type="Texture" id=13]
 [ext_resource path="res://assets/sprites/corridor.png" type="Texture" id=14]
 [ext_resource path="res://assets/tilesets/tileset_color_blocks.png" type="Texture" id=15]
+[ext_resource path="res://assets/tilesets/tileset_color_blocks_corridor.png" type="Texture" id=16]
 
 [sub_resource type="ConvexPolygonShape2D" id=1]
 points = PoolVector2Array( 0, 0, 32, 0, 32, 32, 0, 32 )
@@ -95,23 +96,11 @@ points = PoolVector2Array( 32, 5.66603, 0, 5.66603, 0, 0, 32, 0 )
 [sub_resource type="ConvexPolygonShape2D" id=15]
 points = PoolVector2Array( 32, 5.82754, 0.0433655, 5.82754, 0.0433655, 0, 32, 0 )
 
-[sub_resource type="ConvexPolygonShape2D" id=16]
-points = PoolVector2Array( 6.01907, 32, 0, 32, 0, 0, 6.01907, 0 )
-
 [sub_resource type="ConvexPolygonShape2D" id=17]
 points = PoolVector2Array( 5.85757, 32, 0, 32, 0, 26.1772, 5.85757, 26.1772 )
 
 [sub_resource type="ConvexPolygonShape2D" id=18]
 points = PoolVector2Array( 26.0677, 26.0157, 32, 26.0157, 32, 32, 26.0677, 32 )
-
-[sub_resource type="ConvexPolygonShape2D" id=19]
-points = PoolVector2Array( 26.0677, 0, 32, 0, 32, 32, 26.0677, 32 )
-
-[sub_resource type="ConvexPolygonShape2D" id=20]
-points = PoolVector2Array( 32, 32, 26.0677, 32, 26.0677, 0, 32, 0 )
-
-[sub_resource type="ConvexPolygonShape2D" id=21]
-points = PoolVector2Array( 5.85757, 31.7861, 0, 31.7861, 0, 0, 5.85757, 0 )
 
 [sub_resource type="ConvexPolygonShape2D" id=22]
 points = PoolVector2Array( 32, 32, 0, 32, 0, 26.0329, 32, 26.0329 )
@@ -143,12 +132,6 @@ points = PoolVector2Array( 26.1854, 0, 32, 0, 32, 32, 26.1854, 32 )
 [sub_resource type="ConvexPolygonShape2D" id=31]
 points = PoolVector2Array( 26.1854, 0, 32, 0, 32, 32, 26.1854, 32 )
 
-[sub_resource type="ConvexPolygonShape2D" id=32]
-points = PoolVector2Array( 5.65225, 32, 0, 32, 0, 0, 5.65225, 0 )
-
-[sub_resource type="ConvexPolygonShape2D" id=33]
-points = PoolVector2Array( 26.4865, 0, 32, 0, 32, 31.808, 26.4865, 31.808 )
-
 [sub_resource type="ConvexPolygonShape2D" id=34]
 points = PoolVector2Array( 26.235, 0, 32, 0, 32, 32, 26.235, 32 )
 
@@ -167,10 +150,11 @@ extends TileSet
 
 const ROOMS = 47
 const CORRIDORS = 53
+const TEST_CORRIDORS = 54
 
 var binds = {
-  ROOMS: [CORRIDORS],
-  CORRIDORS: [ROOMS]
+  ROOMS: [TEST_CORRIDORS],
+  TEST_CORRIDORS: [ROOMS]
 }
 
 func _is_tile_bound(drawn_id, neighbor_id):
@@ -282,12 +266,6 @@ resource_local_to_scene = true
 "shape": SubResource( 15 ),
 "shape_transform": Transform2D( 1, 0, 0, 1, 0, 0 )
 }, {
-"autotile_coord": Vector2( 6, 1 ),
-"one_way": false,
-"one_way_margin": 1.0,
-"shape": SubResource( 16 ),
-"shape_transform": Transform2D( 1, 0, 0, 1, 0, 0 )
-}, {
 "autotile_coord": Vector2( 6, 0 ),
 "one_way": false,
 "one_way_margin": 1.0,
@@ -298,24 +276,6 @@ resource_local_to_scene = true
 "one_way": false,
 "one_way_margin": 1.0,
 "shape": SubResource( 18 ),
-"shape_transform": Transform2D( 1, 0, 0, 1, 0, 0 )
-}, {
-"autotile_coord": Vector2( 5, 1 ),
-"one_way": false,
-"one_way_margin": 1.0,
-"shape": SubResource( 19 ),
-"shape_transform": Transform2D( 1, 0, 0, 1, 0, 0 )
-}, {
-"autotile_coord": Vector2( 5, 2 ),
-"one_way": false,
-"one_way_margin": 1.0,
-"shape": SubResource( 20 ),
-"shape_transform": Transform2D( 1, 0, 0, 1, 0, 0 )
-}, {
-"autotile_coord": Vector2( 6, 2 ),
-"one_way": false,
-"one_way_margin": 1.0,
-"shape": SubResource( 21 ),
 "shape_transform": Transform2D( 1, 0, 0, 1, 0, 0 )
 }, {
 "autotile_coord": Vector2( 5, 3 ),
@@ -376,18 +336,6 @@ resource_local_to_scene = true
 "one_way": false,
 "one_way_margin": 1.0,
 "shape": SubResource( 31 ),
-"shape_transform": Transform2D( 1, 0, 0, 1, 0, 0 )
-}, {
-"autotile_coord": Vector2( 8, 1 ),
-"one_way": false,
-"one_way_margin": 1.0,
-"shape": SubResource( 32 ),
-"shape_transform": Transform2D( 1, 0, 0, 1, 0, 0 )
-}, {
-"autotile_coord": Vector2( 8, 1 ),
-"one_way": false,
-"one_way_margin": 1.0,
-"shape": SubResource( 33 ),
 "shape_transform": Transform2D( 1, 0, 0, 1, 0, 0 )
 }, {
 "autotile_coord": Vector2( 8, 2 ),
@@ -491,6 +439,29 @@ resource_local_to_scene = true
 "shape_transform": Transform2D( 1, 0, 0, 1, 0, 0 )
 } ]
 53/z_index = 0
+54/name = "tileset_color_blocks_corridor.png 54"
+54/texture = ExtResource( 16 )
+54/tex_offset = Vector2( 0, 0 )
+54/modulate = Color( 1, 1, 1, 1 )
+54/region = Rect2( 0, 0, 352, 160 )
+54/tile_mode = 1
+54/autotile/bitmask_mode = 1
+54/autotile/bitmask_flags = [ Vector2( 0, 0 ), 432, Vector2( 0, 1 ), 438, Vector2( 0, 2 ), 54, Vector2( 0, 3 ), 48, Vector2( 1, 0 ), 504, Vector2( 1, 1 ), 511, Vector2( 1, 2 ), 63, Vector2( 1, 3 ), 56, Vector2( 2, 0 ), 216, Vector2( 2, 1 ), 219, Vector2( 2, 2 ), 27, Vector2( 2, 3 ), 24, Vector2( 3, 0 ), 144, Vector2( 3, 1 ), 146, Vector2( 3, 2 ), 18, Vector2( 3, 3 ), 16, Vector2( 4, 0 ), 176, Vector2( 4, 1 ), 182, Vector2( 4, 2 ), 178, Vector2( 4, 3 ), 50, Vector2( 4, 4 ), 178, Vector2( 5, 0 ), 248, Vector2( 5, 1 ), 255, Vector2( 5, 2 ), 507, Vector2( 5, 3 ), 59, Vector2( 5, 4 ), 251, Vector2( 6, 0 ), 440, Vector2( 6, 1 ), 447, Vector2( 6, 2 ), 510, Vector2( 6, 3 ), 62, Vector2( 6, 4 ), 446, Vector2( 7, 0 ), 152, Vector2( 7, 1 ), 155, Vector2( 7, 2 ), 218, Vector2( 7, 3 ), 26, Vector2( 7, 4 ), 154, Vector2( 8, 0 ), 184, Vector2( 8, 1 ), 191, Vector2( 8, 2 ), 506, Vector2( 8, 3 ), 58, Vector2( 8, 4 ), 186, Vector2( 9, 0 ), 443, Vector2( 9, 1 ), 254, Vector2( 9, 2 ), 442, Vector2( 9, 3 ), 190, Vector2( 10, 2 ), 250, Vector2( 10, 3 ), 187 ]
+54/autotile/icon_coordinate = Vector2( 0, 0 )
+54/autotile/tile_size = Vector2( 32, 32 )
+54/autotile/spacing = 0
+54/autotile/occluder_map = [  ]
+54/autotile/navpoly_map = [  ]
+54/autotile/priority_map = [  ]
+54/autotile/z_index_map = [  ]
+54/occluder_offset = Vector2( 0, 0 )
+54/navigation_offset = Vector2( 0, 0 )
+54/shape_offset = Vector2( 0, 0 )
+54/shape_transform = Transform2D( 1, 0, 0, 1, 0, 0 )
+54/shape_one_way = false
+54/shape_one_way_margin = 0.0
+54/shapes = [  ]
+54/z_index = 0
 script = SubResource( 38 )
 
 [sub_resource type="RectangleShape2D" id=40]

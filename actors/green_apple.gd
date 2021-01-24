@@ -30,7 +30,6 @@ func _ready():
   tile_mover.west_collider = $collider_west
   behaviors = [wander]
   Scheduler.entities.append(self)
-  #Scheduler.submit(self, get_next_action())
 
 func die():
   if tile_mover.map:
@@ -43,7 +42,6 @@ func handle_action(action):
     behavior.handle_action(action)
   if action.type == 'attack':
     attack.attack(action.payload, false)
-  #Scheduler.submit(self, get_next_action())
 
 func get_next_action():
   if map:
