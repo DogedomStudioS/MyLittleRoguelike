@@ -12,6 +12,7 @@ var nice_name = "You"
 var directional_animation = true
 var move_animation = "bounces"
 var dead = false
+var map = null
 
 var experience = 0
 var level = 1

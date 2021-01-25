@@ -33,7 +33,15 @@ func add(item, you = false):
         MessageLog.log("Picked up %s" % [item.label])
 
 func drop(item):
-  pass
+  if "drop" in item and "map" in host:
+    var new_item_type = load("res://actors/pickups/%s.tscn" % [item.drop])
+    var map = host.map
+    if new_item_type:
+      var new_item = new_item_type.instance()
+      new_item.map = map
+      map.add_child(new_item)
+      new_item.position = host.position.snapped(Vector2.ONE * map.cell_size) - Vector2(map.cell_size.x / 2, map.cell_size.x / 2)
+      map.add_to_tile(new_item, map.world_to_map(new_item.position))
 
 func remove_item(index):
   items.remove(index)

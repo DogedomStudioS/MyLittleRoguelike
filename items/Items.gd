@@ -20,8 +20,9 @@ var items = {
     "label": "Small Healthpack",
     "icon": preload("res://assets/sprites/juice_box_pear.png"),
     "type": Constants.ITEM_TYPE.consumable,
-    "properties": { "die": Constants.DICE.d6, "die_count": 1 },
-    "on_use": funcref(self, "_use_health_item")
+    "properties": { "die": Constants.DICE.d4, "die_count": 3 },
+    "on_use": funcref(self, "_use_health_item"),
+    "drop": "Juice_Box_Pear"
   }
 }
 

@@ -28,6 +28,14 @@ func _on_ItemsList_item_selected(index):
           host.inventory.remove_item(index)
           refresh_inventory_lists()
 
+func _on_ItemsList_item_dropped(index):
+  if host:
+    var item = host.inventory.items[index]
+    if "drop" in item:
+      host.inventory.drop(item)
+      host.inventory.remove_item(index)
+      refresh_inventory_lists()
+
 # TODO: this needs to be a signal of some sort
 func refresh_inventory_lists():
   var weapons = host.inventory.weapons
@@ -47,3 +55,23 @@ func _on_Button_pressed():
   if host and "attack" in host:
     weapons_list.unselect_all()
     host.attack.arm_weapon(null, true)
+
+
+func _on_ItemsList_item_rmb_selected(index, _at_position):
+  if host:
+    var item = host.inventory.items[index]
+    if "drop" in item:
+      host.inventory.drop(item)
+      host.inventory.remove_item(index)
+      refresh_inventory_lists()
+
+
+func _on_ItemsList_item_activated(index):
+  if host:
+    var item = host.inventory.items[index]
+    match item.type:
+      Constants.ITEM_TYPE.consumable:
+        if "on_use" in item:
+          item.on_use.call_func(host, item)
+          host.inventory.remove_item(index)
+          refresh_inventory_lists()

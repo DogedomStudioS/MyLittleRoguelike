@@ -32,7 +32,7 @@ func _door_opening_mode():
 func do_pickup():
   var tile_contents = map.get_tile_contents(map.world_to_map(current_player.position))
   for node in tile_contents:
-    if node.is_in_group(Constants.GROUPS.ITEMS):
+    if is_instance_valid(node) and node.is_in_group(Constants.GROUPS.ITEMS):
       Scheduler.handle_player_action(node, {
         "type": "pickup",
         "player": true,

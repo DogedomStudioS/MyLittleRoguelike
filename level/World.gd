@@ -284,6 +284,7 @@ func make_map():
       )
       Map.add_to_tile(new_door, Map.world_to_map(new_door.position))
   
+  Player.map = Map
   Player.position = (
     start_room.position.snapped(Vector2.ONE * tile_size)
     + Vector2(tile_size / 2, tile_size / 2)
