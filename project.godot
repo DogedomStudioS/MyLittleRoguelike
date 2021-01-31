@@ -27,6 +27,7 @@ Constants="*res://Constants.gd"
 Game="*res://Game.gd"
 MessageLog="*res://MessageLog.gd"
 Items="*res://items/Items.gd"
+Persistence="*res://Save.gd"
 
 [display]
 

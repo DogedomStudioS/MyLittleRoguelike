@@ -3,7 +3,11 @@ extends TileMap
 var fog_of_war: TileMap
 var claimed_move_targets = []
 var tile_contents = {}
+var topleft = Vector2(0, 0)
+var bottomright = Vector2(0, 0)
 var Downstairs
+var room_positions = []
+var room_sizes = []
 
 
 func _ready():
@@ -37,6 +41,17 @@ func is_location_occupied(location: Vector2):
   var index = _index_for_tile(location)
   if index in tile_contents:
     return tile_contents[index].size() > 0
+
+
+func is_location_blocked(location: Vector2):
+  print("testing location blocked at %d, %d" % [location.x, location.y])
+  var collision = get_world_2d().direct_space_state.intersect_point(location, 32, [], Constants.COLLISION_LAYERS.SOLID, true, true)
+  print(collision)
+  return collision and collision.size() > 0
+
+func is_location_solid_wall(location: Vector2):
+  var coords = get_cell_autotile_coord(int(location.x), int(location.y))
+  return [Vector2(0, 0), Vector2(1, 0), Vector2(2, 0)].find(coords) > -1
 
 
 func add_to_tile(node: Node2D, destination: Vector2, origin: Vector2 = Vector2(-1, -1)):

@@ -82,20 +82,31 @@ margin_bottom = 114.0
 custom_fonts/font = ExtResource( 3 )
 text = "Restart"
 
-[node name="Quit" type="Button" parent="OuterContainer/Panel/InnerContainer"]
+[node name="Save" type="Button" parent="OuterContainer/Panel/InnerContainer"]
 margin_top = 118.0
 margin_right = 147.0
 margin_bottom = 137.0
 custom_fonts/font = ExtResource( 3 )
+text = "Save"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Quit" type="Button" parent="OuterContainer/Panel/InnerContainer"]
+margin_top = 141.0
+margin_right = 147.0
+margin_bottom = 160.0
+custom_fonts/font = ExtResource( 3 )
 text = "Quit"
 
 [node name="Label2" type="Label" parent="OuterContainer/Panel/InnerContainer"]
-margin_top = 141.0
+margin_top = 164.0
 margin_right = 147.0
-margin_bottom = 170.0
+margin_bottom = 193.0
 custom_fonts/font = ExtResource( 3 )
 text = "
 (c) 2021 Dogedom StudioS"
 align = 1
 [connection signal="pressed" from="OuterContainer/Panel/InnerContainer/Restart" to="." method="_on_Restart_pressed"]
+[connection signal="pressed" from="OuterContainer/Panel/InnerContainer/Save" to="." method="_on_Save_pressed"]
 [connection signal="pressed" from="OuterContainer/Panel/InnerContainer/Quit" to="." method="_on_Quit_pressed"]

@@ -44,6 +44,8 @@ func _ready():
   tile_mover.west_collider = $collider_west
   tile_mover.northwest_collider = $collider_northwest
   Scheduler.order_completion_handlers.append(self)
+
+func load_persistence():
   if Game.player_carry_over:
     var carry_over = Game.player_carry_over
     mortality.max_hitpoints = carry_over.max_hp
@@ -54,8 +56,8 @@ func _ready():
     last_health_regeneration_time = carry_over.last_health_regeneration_time
     inventory.weapons = carry_over.weapons
     inventory.items = carry_over.items
-    attack.arm_weapon(carry_over.weapon, false)
-
+    if "weapon" in carry_over:
+      attack.arm_weapon(carry_over.weapon, false)
   
 func die():
   tile_mover.map.remove_from_tile(self, tile_mover.map.world_to_map(self.position))

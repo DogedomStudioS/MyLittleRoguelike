@@ -44,12 +44,18 @@ func refresh_inventory_lists():
   items_list.clear()
   var weapons_index = 0
   for weapon in weapons:
-    weapons_list.add_item(weapon.label, weapon.icon)
+    var icon = weapon.icon
+    if typeof(icon) == TYPE_STRING:
+      icon = load(icon)
+    weapons_list.add_item(weapon.label, icon)
     if host.attack.weapon == weapon:
       weapons_list.select(weapons_index)
   weapons_index += 1
   for item in items:
-    items_list.add_item(item.label, item.icon)
+    var icon = item.icon
+    if typeof(icon) == TYPE_STRING:
+      icon = load(icon)
+    items_list.add_item(item.label, icon)
 
 func _on_Button_pressed():
   if host and "attack" in host:
@@ -69,9 +75,10 @@ func _on_ItemsList_item_rmb_selected(index, _at_position):
 func _on_ItemsList_item_activated(index):
   if host:
     var item = host.inventory.items[index]
-    match item.type:
+    match int(item.type):
       Constants.ITEM_TYPE.consumable:
         if "on_use" in item:
-          item.on_use.call_func(host, item)
+          #item.on_use.call_func(host, item)
+          Items.call(item.on_use, host, item)
           host.inventory.remove_item(index)
           refresh_inventory_lists()

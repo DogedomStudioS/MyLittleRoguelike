@@ -13,3 +13,9 @@ func _on_Restart_pressed():
 
 func _on_Quit_pressed():
   get_tree().quit()
+
+
+func _on_Save_pressed():
+  var level = get_tree().root.get_node("./Root/Game/World/")
+  if level:
+    Persistence.save_game(level.Player, level.Map)

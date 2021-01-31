@@ -33,9 +33,13 @@ var door_candidates = []
 var tile_rooms = 47
 var tile_empty = 52
 var tile_threshold = 50
-var tile_corridor = 54 #53
-var initial_creatures = 9
-var initial_pickups = 30
+var tile_corridor = 54
+var initial_creatures = 7
+var initial_pickups = 3
+var topleft = Vector2(0, 0)
+var bottomright = Vector2(0, 0)
+var room_positions = []
+var room_sizes = []
 
 const GREEN_APPLE_CHANCE = 0.15
 const CREATURE_SPAWN_TIME = 45
@@ -45,22 +49,104 @@ var path
 var start_room = null
 var end_room = null
 
-
 func _ready():
   $Input.frozen_input = true
+  if Game.just_launched:
+    Game.just_launched = false
+    Persistence.load_game()
   Map.fog_of_war = FogMap
   Map.claimed_move_targets = []
   randomize()
-  make_rooms()
-  setup_message_log()
   Scheduler.entities = []
   Scheduler.order_completion_handlers.append(self)
+  if Game.loading_existing_tilemap:
+    # Load map tiles here
+    var level = Game.existing_level
+
+    for room in level.rooms:
+      var r = Room.instance()
+      r.make_room(Vector2(int(room.position_x), int(room.position_y)), Vector2(int(room.size_x), int(room.size_y)))
+      $Rooms.add_child(r)
+      Map.room_positions.append(Vector2(int(room.position_x), int(room.position_y)))
+      Map.room_sizes.append(Vector2(int(room.size_x), int(room.size_y)))
+
+    topleft = Vector2(level.topleft_x, level.topleft_y)
+    bottomright = Vector2(level.bottomright_x, level.bottomright_y)
+    
+    for x in range(topleft.x, bottomright.x):
+      for y in range(topleft.y, bottomright.y):
+        Map.set_cell(x, y, tile_empty)
+        VisibilityMap.set_cell(x, y, 0)
+        
+    Map.topleft = topleft
+    Map.bottomright = bottomright
+    var cell_data = level.tiles.split(",")
+    var max_tile_index = cell_data.size() / 3
+    var start_index = 0
+    for i in range(0, max_tile_index):
+      start_index = i * 3
+      Map.set_cell(int(cell_data[start_index]), int(cell_data[start_index + 1]), int(cell_data[start_index + 2]))
+      if int(cell_data[start_index + 2]) != tile_empty:
+        VisibilityMap.set_cell(int(cell_data[start_index]), int(cell_data[start_index + 1]), -1)
+    
+    Map.update_dirty_quadrants()
+    Map.update_bitmask_region(topleft, bottomright)
+
+    decorate_south_walls()
+    Player.map = Map
+    Player.position = Map.map_to_world(Vector2(Game.player_carry_over.x, Game.player_carry_over.y)).snapped(Vector2.ONE * tile_size) + Vector2(tile_size / 2, tile_size / 2)
+    Player.load_persistence()
+    Map.add_to_tile(Player, Map.world_to_map(Player.position))
+    $Camera.position = Player.position
+
+    Downstairs.position = (
+      Map.map_to_world(Vector2(float(level.downstairs_x), float(level.downstairs_y))).snapped(Vector2.ONE * tile_size)
+      + Vector2(tile_size / 2, tile_size / 2)
+    )
+    Map.add_to_tile(Downstairs, Map.world_to_map(Downstairs.position))
+    Map.Downstairs = Downstairs
+
+    for creature in level.entities.creatures:
+      print("loading creature from %s" % [creature.node_name])
+      var new_creature = load(creature.node_name).instance()
+      new_creature.map = Map
+      Map.add_child(new_creature)
+      new_creature.position = (
+        Map.map_to_world(Vector2(int(creature.x), int(creature.y))).snapped(Vector2.ONE * tile_size)
+        + Vector2(tile_size / 2, tile_size / 2)
+      )
+      Map.add_to_tile(new_creature, Map.world_to_map(new_creature.position))
+      new_creature.mortality.hitpoints = int(creature.hitpoints)
+
+    for door in level.entities.doors:
+      var new_door = load(door.node_name).instance()
+      new_door.closed = door.closed
+      new_door.map = Map
+      Map.add_child(new_door)
+      new_door.position = (
+        Map.map_to_world(Vector2(int(door.x), int(door.y))).snapped(Vector2.ONE * tile_size)
+        + Vector2(tile_size / 2, tile_size / 2) + Vector2(0, 8)
+      )
+      Map.add_to_tile(new_door, Map.world_to_map(new_door.position))
+
+
+    $"../../UIViewport/UI/".current_player = Player
+    $"../../UIViewport/UI/".ready = true
+    #for room in $Rooms.get_children():
+    #room.queue_free()
+    Loading.set_visible(false)
+    $Input.frozen_input = false
+    Game.loading_existing_tilemap = false
+  else:
+    make_rooms()
+  setup_message_log()
   if Game.current_floor == 1:
     MessageLog.log("Welcome to Apples Versus Oranges!")
 
 
 func orders_handled(game_time):
   if game_time - last_creature_spawned > CREATURE_SPAWN_TIME:
+    print("spawned creature without blowing up.")
     var green_apple_chance = (GREEN_APPLE_CHANCE * float(Game.current_floor)) * 100.0
     var rooms = $Rooms.get_children()
     var random_room = randi() % rooms.size()
@@ -68,9 +154,9 @@ func orders_handled(game_time):
     var s = (room.size / tile_size).floor()
     var ul = (room.position / tile_size).floor() - s
     var tile = Vector2(
-      (randi() % int(s.x) * 2 - 1) + int(ul.x), (randi() % int(s.y) * 2 - 1) + int(ul.y)
+      (randi() % int(s.x) * 2 - 1) + int(ul.x), (randi() % int(s.y) * 2 - 1) + int(ul.y) + 1
     )
-    if Map.get_cell(tile.x, tile.y) == tile_rooms and not Map.is_location_occupied(tile):
+    if Map.get_cell(tile.x, tile.y) == tile_rooms and not Map.is_location_occupied(tile) and not Map.is_location_solid_wall(tile):
       var new_creature = (
         Creature.instance()
         if randi() % 100 > int(green_apple_chance)
@@ -104,7 +190,6 @@ func make_rooms():
     $Rooms.add_child(r)
   # wait for rigid bodies to settle
   yield(get_tree().create_timer(1.1), 'timeout')
-  var room_positions = []
   # cull rooms
   for room in $Rooms.get_children():
     if randf() < cull:
@@ -112,8 +197,11 @@ func make_rooms():
     else:
       room.mode = RigidBody2D.MODE_STATIC
       room_positions.append(room.position)
+      room_sizes.append(room.size)
   yield(get_tree(), 'idle_frame')
   path = build_room_connections(room_positions)
+  Map.room_positions = room_positions
+  Map.room_sizes = room_sizes
   if ! debug_map_generation:
     make_map()
 
@@ -154,6 +242,25 @@ func build_room_connections(nodes):
     path.connect_points(path.get_closest_point(p), n)
   return path
 
+func decorate_south_walls():
+  for x in range(topleft.x, bottomright.x):
+    for y in range(topleft.y, bottomright.y):
+      var autotile = Map.get_cell_autotile_coord(x, y)
+      if autotile == Vector2(0, 2) or autotile == Vector2(1, 2) or autotile == Vector2(2, 2):
+        var new_south_wall
+        if autotile == Vector2(0, 2):
+          new_south_wall = South_Wall_Left.instance()
+        elif autotile == Vector2(2, 2):
+          new_south_wall = South_Wall_Right.instance()
+        else:
+          new_south_wall = South_Wall_Mid.instance()
+        new_south_wall.map = Map
+        Map.add_child(new_south_wall)
+        new_south_wall.position = (
+          Map.map_to_world(Vector2(x, y)).snapped(Vector2.ONE * tile_size)
+          + Vector2(tile_size / 2, tile_size / 2)
+        )
+        Map.add_to_tile(new_south_wall, Map.world_to_map(new_south_wall.position))
 
 func make_map():
   # Convert rooms to TileMap
@@ -167,12 +274,17 @@ func make_map():
     )
     full_rect = full_rect.merge(r)
   full_rect = full_rect.grow(tile_size)
-  var topleft = Map.world_to_map(full_rect.position)
-  var bottomright = Map.world_to_map(full_rect.end)
+  topleft = Map.world_to_map(full_rect.position)
+  Map.topleft = topleft
+  bottomright = Map.world_to_map(full_rect.end)
+  Map.bottomright = bottomright
   for x in range(topleft.x, bottomright.x):
     for y in range(topleft.y, bottomright.y):
       Map.set_cell(x, y, tile_empty)
       VisibilityMap.set_cell(x, y, 0)
+
+  Map.update_dirty_quadrants()
+  Map.update_bitmask_region(topleft, bottomright)
 
   # Carve rooms
   var corridors = []
@@ -184,12 +296,12 @@ func make_map():
       for y in range(1, s.y * 2 - 1):
         Map.set_cell(ul.x + x, ul.y + y, tile_rooms)
         VisibilityMap.set_cell(ul.x + x, ul.y + y, -1)
-    if initial_creatures > 0:
-      initial_creatures -= 1
+    Map.update_bitmask_region(ul, ul + s)
+    if room != start_room and initial_creatures > 0:
       var tile = Vector2(
-        (randi() % int(s.x) * 2 - 1) + int(ul.x), (randi() % int(s.y) * 2 - 1) + int(ul.y)
+        (randi() % int(s.x) * 2 - 1) + int(ul.x), (randi() % int(s.y) * 2 - 1) + int(ul.y) + 1
       )
-      if Map.get_cell(tile.x, tile.y) == tile_rooms and not Map.is_location_occupied(tile):
+      if Map.get_cell(tile.x, tile.y) == tile_rooms and not Map.is_location_occupied(tile) and not Map.is_location_solid_wall(tile):
         var new_creature = Creature.instance()
         new_creature.map = Map
         Map.add_child(new_creature)
@@ -198,12 +310,12 @@ func make_map():
           + Vector2(tile_size / 2, tile_size / 2)
         )
         Map.add_to_tile(new_creature, Map.world_to_map(new_creature.position))
-    if initial_pickups > 0:
-      initial_pickups -= 1
+        initial_creatures -= 1
+    if room != start_room and initial_pickups > 0:
       var tile = Vector2(
-        (randi() % int(s.x) * 2 - 1) + int(ul.x), (randi() % int(s.y) * 2 - 1) + int(ul.y)
+        (randi() % int(s.x) * 2 - 1) + int(ul.x), (randi() % int(s.y) * 2 - 1) + int(ul.y) + 1
       )
-      if Map.get_cell(tile.x, tile.y) == tile_rooms:
+      if Map.get_cell(tile.x, tile.y) == tile_rooms and not Map.is_location_solid_wall(tile):
         var new_pickup = PearJuiceBox.instance()
         new_pickup.map = Map
         Map.add_child(new_pickup)
@@ -212,6 +324,7 @@ func make_map():
           + Vector2(tile_size / 2, tile_size / 2)
         )
         Map.add_to_tile(new_pickup, Map.world_to_map(new_pickup.position))
+        initial_pickups -= 1
     # Carve connecting corridor
     var p = path.get_closest_point(room.position)
     paths.append(p)
@@ -233,24 +346,7 @@ func make_map():
   
   Map.update_dirty_quadrants()
   Map.update_bitmask_region(topleft, bottomright)
-  for x in range(topleft.x, bottomright.x):
-    for y in range(topleft.y, bottomright.y):
-      var autotile = Map.get_cell_autotile_coord(x, y)
-      if autotile == Vector2(0, 2) or autotile == Vector2(1, 2) or autotile == Vector2(2, 2):
-        var new_south_wall
-        if autotile == Vector2(0, 2):
-          new_south_wall = South_Wall_Left.instance()
-        elif autotile == Vector2(2, 2):
-          new_south_wall = South_Wall_Right.instance()
-        else:
-          new_south_wall = South_Wall_Mid.instance()
-        new_south_wall.map = Map
-        Map.add_child(new_south_wall)
-        new_south_wall.position = (
-          Map.map_to_world(Vector2(x, y)).snapped(Vector2.ONE * tile_size)
-          + Vector2(tile_size / 2, tile_size / 2)
-        )
-        Map.add_to_tile(new_south_wall, Map.world_to_map(new_south_wall.position))
+  decorate_south_walls()
   for door in door_candidates:
     # N, E, S, W
     var neighbors = [
@@ -285,10 +381,45 @@ func make_map():
       Map.add_to_tile(new_door, Map.world_to_map(new_door.position))
   
   Player.map = Map
-  Player.position = (
-    start_room.position.snapped(Vector2.ONE * tile_size)
-    + Vector2(tile_size / 2, tile_size / 2)
-  )
+  var start_position = start_room.position.snapped(Vector2.ONE * tile_size) + Vector2(tile_size / 2, tile_size / 2) 
+  var try_position = start_position
+  var positionValid = false
+  var tries = 0
+  while not positionValid: 
+    if not Map.is_location_occupied(Map.world_to_map(try_position)) and not Map.is_location_solid_wall(Map.world_to_map(try_position)):
+      positionValid = true
+      break
+    if tries < 16:
+      if tries % 2 == 0:
+        try_position.x += tile_size
+      else:
+        try_position.y += tile_size
+    elif tries >= 16 and tries < 32:
+      if tries == 16:
+        try_position = start_position
+      if tries % 2 == 0:
+        try_position.x -= tile_size
+      else:
+        try_position.y += tile_size
+    elif tries >= 32 and tries < 48:
+      if tries == 32:
+        try_position = start_position
+      if tries % 2 == 0:
+        try_position.x += tile_size
+      else:
+        try_position.y -= tile_size
+    elif tries >= 48 and tries < 64:
+      if tries == 48:
+        try_position = start_position
+      if tries % 2 == 0:
+        try_position.x -= tile_size
+      else:
+        try_position.y -= tile_size
+    elif tries >= 96:
+      print("WARNING: unable to place player!")
+      positionValid = true
+    tries += 1
+  Player.position = try_position
   Map.add_to_tile(Player, Map.world_to_map(Player.position))
   Downstairs.position = (
     (end_room.position + Vector2(0, 1)).snapped(Vector2.ONE * tile_size)
@@ -297,6 +428,7 @@ func make_map():
   Map.add_to_tile(Downstairs, Map.world_to_map(Downstairs.position))
   Map.Downstairs = Downstairs
   $Camera.position = Player.position
+  Player.load_persistence()
   $"../../UIViewport/UI/".current_player = Player
   $"../../UIViewport/UI/".ready = true
   #for room in $Rooms.get_children():
