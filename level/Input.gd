@@ -41,6 +41,23 @@ func do_pickup():
       MessageLog.log("Picked up %s." % [node.nice_name if "nice_name" in node else "an item"])
       return
   MessageLog.log("Nothing to pickup.")
+  return
+
+func do_stairs():
+  if current_player.get_parent().check_for_node_at_location(current_player.get_parent().Downstairs, current_player.position):
+    Persistence.save_level(current_player.get_parent())
+    Persistence.load_level(Game.current_floor + 1)
+    Game.next_level_direction = "down"
+    current_player.change_level(Game.current_floor + 1)
+  if current_player.get_parent().check_for_node_at_location(current_player.get_parent().Upstairs, current_player.position):
+    if Game.current_floor > 1:
+      Persistence.save_level(current_player.get_parent())
+      Persistence.load_level(Game.current_floor - 1)
+      Game.next_level_direction = "up"
+      current_player.change_level(Game.current_floor - 1)
+    else:
+      MessageLog.log("This is the bottom floor for now.")
+  return
 
 func try_action_in_direction(direction):
   if not direction in Constants.directions.keys():
@@ -116,12 +133,15 @@ func _physics_process(delta):
   
   if Input.is_action_just_pressed("pickup"):
     do_pickup()
+  
+  if Input.is_action_just_pressed("use_stairs"):
+    do_stairs()
 
   if any_direction_pressed():
     time_since_move += delta
     if time_since_move > MOVE_RETRY_DELAY:
       time_since_move = 0.0
-      direction = resolve_direction()
+      direction = resolve_held_direction()
   else:
     time_since_move = 0.0
   if current_player and direction:
@@ -169,13 +189,26 @@ func resolve_direction():
     direction = 'up_left'
   return direction
 
+func resolve_held_direction():
+  var direction = null
+  if Input.is_action_pressed("move_north"):
+    direction = 'up'
+  if Input.is_action_pressed("move_northeast"):
+    direction = 'up_right'
+  if Input.is_action_pressed("move_east"):
+    direction = 'right'
+  if Input.is_action_pressed("move_southeast"):
+    direction = 'down_right'
+  if Input.is_action_pressed("move_south"):
+    direction = 'down'
+  if Input.is_action_pressed("move_southwest"):
+    direction = 'down_left'
+  if Input.is_action_pressed("move_west"):
+    direction = 'left'
+  if Input.is_action_pressed("move_northwest"):
+    direction = 'up_left'
+  return direction
+
 func any_direction_pressed():
-  return (Input.is_action_pressed("move_north")
-    or Input.is_action_pressed("move_northeast")
-    or Input.is_action_pressed("move_east")
-    or Input.is_action_pressed("move_southeast")
-    or Input.is_action_pressed("move_south")
-    or Input.is_action_pressed("move_southwest")
-    or Input.is_action_pressed("move_west")
-    or Input.is_action_pressed("move_northwest")
-  )
+  var pressed = Input.is_action_pressed("move_north") or Input.is_action_pressed("move_northeast") or Input.is_action_pressed("move_east") or Input.is_action_pressed("move_southeast") or Input.is_action_pressed("move_south") or Input.is_action_pressed("move_southwest") or Input.is_action_pressed("move_west") or Input.is_action_pressed("move_northwest")
+  return pressed

@@ -16,23 +16,22 @@ var map = null
 
 var experience = 0
 var level = 1
-const EXP_PER_LEVEL = 150
+const EXP_PER_LEVEL = 85
 var moves_per_exp = 100
 var last_movement_exp_gain_time = 0.0
 
 const HITPOINTS_PER_LEVEL = 3
-const HEALTH_REGENERATION_DELAY = 45
+const HEALTH_REGENERATION_DELAY = 38
 var last_health_regeneration_time = 0.0
 
 func _ready():
   add_to_group(Constants.GROUPS.PLAYER)
   inventory.host = self
-  inventory.add(Items.weapons.club)
   inventory.add(Items.items.health_potion_small)
   attack.host = self
   mortality.host = self
-  mortality.max_hitpoints = 30
-  mortality.hitpoints = 30
+  mortality.max_hitpoints = 25
+  mortality.hitpoints = 25
   tile_mover.host = self
   tile_mover.tween = $Tween
   tile_mover.north_collider = $collider_north
@@ -93,9 +92,12 @@ func handle_action(action):
     "move":
       tile_mover.move(action.payload)
       if get_parent().check_for_node_at_location(get_parent().Downstairs, position):
-        change_level(Game.current_floor + 1)
+        #change_level(Game.current_floor + 1)
+        MessageLog.log("You are on the stairs to the next floor.")
+      if get_parent().check_for_node_at_location(get_parent().Upstairs, position):
+        MessageLog.log("You are on the stairs to the previous floor.")
     "attack":
-      experience += 1
+      experience += 3
       attack.attack(action.payload, true)
     "wield":
       attack.arm_weapon(action.payload, true)

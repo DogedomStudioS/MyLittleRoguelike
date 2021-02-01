@@ -19,19 +19,21 @@ func save_game(player, level):
     var icon = item.icon
     if typeof(icon) != TYPE_STRING:
       icon = item.icon.resource_path
-    items.append({
+    var item_dictionary = {
       "label": item.label,
       "icon": icon,
       "type": item.type,
       "properties": item.properties,
-      "on_use": item.on_use,
       "drop": item.drop
-    })
+    }
+    if "on_use" in item:
+      item_dictionary.on_use = item.on_use
+    items.append(item_dictionary)
   var player_weapon = null
   if player.attack.weapon:
     var icon = player.attack.weapon.icon
     if typeof(icon) != TYPE_STRING:
-      icon = player.attack.weapon.resource_path
+      icon = player.attack.weapon.icon.resource_path
     player_weapon = {
       "label": player.attack.weapon.label,
       "type": player.attack.weapon.type,
@@ -94,6 +96,8 @@ func save_level(level):
     "bottomright_y": bottomright.y,
     "downstairs_x": level.world_to_map(level.Downstairs.position).x,
     "downstairs_y": level.world_to_map(level.Downstairs.position).y,
+    "upstairs_x": level.world_to_map(level.Upstairs.position).x,
+    "upstairs_y": level.world_to_map(level.Upstairs.position).y,
     "rooms": rooms,
     "tiles": tile_string,
     "entities": get_saved_entities(level)
@@ -164,8 +168,13 @@ func load_level(index: int):
   var open_error = level_load.open("user://level%d.avosave" % [index], File.READ)
   if open_error != OK:
     print("level not found.")
-    return
+    return null
   var level_node = parse_json(level_load.get_line())
   Game.loading_existing_tilemap = true
   Game.existing_level = level_node
 
+func delete_save():
+  var directory_loader = Directory.new()
+  directory_loader.remove(game_save_path)
+  for i in range(1, 100):
+    directory_loader.remove("user://level%d.avosave" % [i])

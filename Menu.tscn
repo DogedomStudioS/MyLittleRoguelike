@@ -30,10 +30,10 @@ __meta__ = {
 }
 
 [node name="Panel" type="Panel" parent="OuterContainer"]
-margin_top = 128.0
+margin_top = 100.0
 margin_right = 250.0
-margin_bottom = 328.0
-rect_min_size = Vector2( 250, 200 )
+margin_bottom = 340.0
+rect_min_size = Vector2( 250, 240 )
 
 [node name="InnerContainer" type="VBoxContainer" parent="OuterContainer/Panel"]
 anchor_left = 0.5
@@ -97,16 +97,43 @@ margin_top = 141.0
 margin_right = 147.0
 margin_bottom = 160.0
 custom_fonts/font = ExtResource( 3 )
-text = "Quit"
+text = "Save and Quit"
 
-[node name="Label2" type="Label" parent="OuterContainer/Panel/InnerContainer"]
+[node name="Abandon" type="Button" parent="OuterContainer/Panel/InnerContainer"]
 margin_top = 164.0
 margin_right = 147.0
-margin_bottom = 193.0
+margin_bottom = 183.0
+custom_fonts/font = ExtResource( 3 )
+text = "Abandon"
+
+[node name="Label2" type="Label" parent="OuterContainer/Panel/InnerContainer"]
+margin_top = 187.0
+margin_right = 147.0
+margin_bottom = 216.0
 custom_fonts/font = ExtResource( 3 )
 text = "
 (c) 2021 Dogedom StudioS"
 align = 1
+
+[node name="AbandonDialog" type="ConfirmationDialog" parent="."]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -100.0
+margin_top = -35.0
+margin_right = 100.0
+margin_bottom = 35.0
+popup_exclusive = true
+window_title = "Abandon Game"
+dialog_text = "Really abandon game? Saved
+progress will be lost."
+dialog_autowrap = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
 [connection signal="pressed" from="OuterContainer/Panel/InnerContainer/Restart" to="." method="_on_Restart_pressed"]
 [connection signal="pressed" from="OuterContainer/Panel/InnerContainer/Save" to="." method="_on_Save_pressed"]
 [connection signal="pressed" from="OuterContainer/Panel/InnerContainer/Quit" to="." method="_on_Quit_pressed"]
+[connection signal="pressed" from="OuterContainer/Panel/InnerContainer/Abandon" to="." method="_on_Abandon_pressed"]
+[connection signal="confirmed" from="AbandonDialog" to="." method="_on_AbandonDialog_confirmed"]

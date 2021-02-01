@@ -6,6 +6,7 @@ var tile_contents = {}
 var topleft = Vector2(0, 0)
 var bottomright = Vector2(0, 0)
 var Downstairs
+var Upstairs
 var room_positions = []
 var room_sizes = []
 

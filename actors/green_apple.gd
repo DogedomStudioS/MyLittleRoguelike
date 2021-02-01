@@ -4,6 +4,7 @@ onready var wander = $wander
 onready var tile_mover = $tile_mover
 onready var mortality = $mortality
 onready var attack = $attack
+onready var inventory = $inventory
 onready var tween = $Tween
 
 var nice_name = "Green Apple"
@@ -15,12 +16,16 @@ var behaviors
 var is_player = false
 var directional_animation = true
 var move_animation = "bounces"
+var weapon_hint_kill = Constants.MESSAGES.green_apple_weapon_hint_kill
+var weapon_kill_success = Constants.MESSAGES.green_apple_weapon_kill_success
 
 func _ready():
   add_to_group(Constants.GROUPS.HOSTILES)
   attack.host = self
+  inventory.host = self
   mortality.hitpoints = 10
   mortality.max_hitpoints = 10
+  mortality.vulnerable_weapon = "Peeler"
   mortality.host = self
   tile_mover.host = self
   tile_mover.tween = $Tween
@@ -31,10 +36,15 @@ func _ready():
   behaviors = [wander]
   Scheduler.entities.append(self)
 
-func die():
+func die(weapon):
   if tile_mover.map:
     tile_mover.map.remove_from_tile(self, tile_mover.map.world_to_map(self.position))
   Scheduler.remove_entity(self)
+  if weapon and "label" in weapon and weapon.label == mortality.vulnerable_weapon:
+    inventory.drop(Items.items.green_apple_slice)
+    MessageLog.log(weapon_kill_success)
+  else:
+    MessageLog.log(weapon_hint_kill)
   queue_free()
 
 func handle_action(action):

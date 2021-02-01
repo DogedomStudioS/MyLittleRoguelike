@@ -7,11 +7,15 @@ onready var VisibilityMap = $Navigation2D/VisibilityMap
 onready var FogMap = $FogOfWar
 onready var Player = $Navigation2D/TileMap/Player
 onready var Downstairs = $Navigation2D/TileMap/Downstairs
+onready var Upstairs = $Navigation2D/TileMap/Upstairs
 onready var Loading = $"../../UIViewport/Loading"
 var Creature = preload("../actors/Creature.tscn")
 var GreenApple = preload("../actors/GreenApple.tscn")
+var YellowApple = preload("../actors/YellowApple.tscn")
 var Obstacle = preload("../actors/Obstacle.tscn")
 var PearJuiceBox = preload("../actors/pickups/Juice_Box_Pear.tscn")
+var ApplePeeler = preload("../actors/pickups/Apple_Peeler.tscn")
+var AppleCorer = preload("../actors/pickups/Apple_Corer.tscn")
 var South_Wall_Mid = preload("../actors/South_Wall_Mid.tscn")
 var South_Wall_Left = preload("../actors/South_Wall_Left.tscn")
 var South_Wall_Right = preload("../actors/South_Wall_Right.tscn")
@@ -42,7 +46,10 @@ var room_positions = []
 var room_sizes = []
 
 const GREEN_APPLE_CHANCE = 0.15
+const YELLOW_APPLE_CHANCE = 0.1
 const CREATURE_SPAWN_TIME = 45
+const GREEN_APPLE_LEVEL_CUTOFF = 2
+const YELLOW_APPLE_LEVEL_CUTOFF = 4
 var last_creature_spawned = 0.0
 
 var path
@@ -59,6 +66,10 @@ func _ready():
   randomize()
   Scheduler.entities = []
   Scheduler.order_completion_handlers.append(self)
+  setup_message_log()
+  if Game.current_floor == 1:
+    MessageLog.log("Welcome to Apples Versus Oranges!")
+
   if Game.loading_existing_tilemap:
     # Load map tiles here
     var level = Game.existing_level
@@ -93,11 +104,6 @@ func _ready():
     Map.update_bitmask_region(topleft, bottomright)
 
     decorate_south_walls()
-    Player.map = Map
-    Player.position = Map.map_to_world(Vector2(Game.player_carry_over.x, Game.player_carry_over.y)).snapped(Vector2.ONE * tile_size) + Vector2(tile_size / 2, tile_size / 2)
-    Player.load_persistence()
-    Map.add_to_tile(Player, Map.world_to_map(Player.position))
-    $Camera.position = Player.position
 
     Downstairs.position = (
       Map.map_to_world(Vector2(float(level.downstairs_x), float(level.downstairs_y))).snapped(Vector2.ONE * tile_size)
@@ -105,6 +111,26 @@ func _ready():
     )
     Map.add_to_tile(Downstairs, Map.world_to_map(Downstairs.position))
     Map.Downstairs = Downstairs
+
+    Upstairs.position = (
+      Map.map_to_world(Vector2(float(level.upstairs_x), float(level.upstairs_y))).snapped(Vector2.ONE * tile_size)
+      + Vector2(tile_size / 2, tile_size / 2)
+    )
+    Map.add_to_tile(Upstairs, Map.world_to_map(Upstairs.position))
+    Map.Upstairs = Upstairs
+
+    Player.map = Map
+    if Game.player_carry_over and "x" in Game.player_carry_over and Game.player_carry_over.x != null:
+      Player.position = Map.map_to_world(Vector2(Game.player_carry_over.x, Game.player_carry_over.y)).snapped(Vector2.ONE * tile_size) + Vector2(tile_size / 2, tile_size / 2)
+      Game.player_carry_over.x = null
+      Game.player_carry_over.y = null
+    else:
+      var new_player_position = Vector2(level.downstairs_x, level.downstairs_y) if Game.next_level_direction == "up" else Vector2(level.upstairs_x, level.upstairs_y)
+      Player.position = Map.map_to_world(new_player_position).snapped(Vector2.ONE * tile_size) + Vector2(tile_size / 2, tile_size / 2)
+    Player.load_persistence()
+    Map.add_to_tile(Player, Map.world_to_map(Player.position))
+    $Camera.position = Player.position
+    Game.loading_existing_tilemap = false
 
     for creature in level.entities.creatures:
       print("loading creature from %s" % [creature.node_name])
@@ -128,6 +154,7 @@ func _ready():
         + Vector2(tile_size / 2, tile_size / 2) + Vector2(0, 8)
       )
       Map.add_to_tile(new_door, Map.world_to_map(new_door.position))
+    MessageLog.log("Game restored.")
 
 
     $"../../UIViewport/UI/".current_player = Player
@@ -139,15 +166,12 @@ func _ready():
     Game.loading_existing_tilemap = false
   else:
     make_rooms()
-  setup_message_log()
-  if Game.current_floor == 1:
-    MessageLog.log("Welcome to Apples Versus Oranges!")
 
 
 func orders_handled(game_time):
   if game_time - last_creature_spawned > CREATURE_SPAWN_TIME:
-    print("spawned creature without blowing up.")
     var green_apple_chance = (GREEN_APPLE_CHANCE * float(Game.current_floor)) * 100.0
+    var yellow_apple_chance = (YELLOW_APPLE_CHANCE * float(Game.current_floor - YELLOW_APPLE_LEVEL_CUTOFF)) * 100.0
     var rooms = $Rooms.get_children()
     var random_room = randi() % rooms.size()
     var room = rooms[random_room]
@@ -157,11 +181,16 @@ func orders_handled(game_time):
       (randi() % int(s.x) * 2 - 1) + int(ul.x), (randi() % int(s.y) * 2 - 1) + int(ul.y) + 1
     )
     if Map.get_cell(tile.x, tile.y) == tile_rooms and not Map.is_location_occupied(tile) and not Map.is_location_solid_wall(tile):
-      var new_creature = (
-        Creature.instance()
-        if randi() % 100 > int(green_apple_chance)
-        else GreenApple.instance()
-      )
+      var spawn_green_apple = randi() % 100 < int(green_apple_chance) and Game.current_floor >= GREEN_APPLE_LEVEL_CUTOFF
+      var spawn_yellow_apple = randi() % 100 < int(yellow_apple_chance) and Game.current_floor >= YELLOW_APPLE_LEVEL_CUTOFF
+      var new_creature
+      if spawn_yellow_apple:
+        print("spawned yellow apple.")
+        new_creature = YellowApple.instance()
+      elif spawn_green_apple:
+        new_creature = GreenApple.instance()
+      else:
+        new_creature = Creature.instance()
       new_creature.map = Map
       Map.add_child(new_creature)
       new_creature.position = (
@@ -316,7 +345,15 @@ func make_map():
         (randi() % int(s.x) * 2 - 1) + int(ul.x), (randi() % int(s.y) * 2 - 1) + int(ul.y) + 1
       )
       if Map.get_cell(tile.x, tile.y) == tile_rooms and not Map.is_location_solid_wall(tile):
-        var new_pickup = PearJuiceBox.instance()
+        var new_pickup
+        if Game.current_floor > GREEN_APPLE_LEVEL_CUTOFF and Game.current_floor <= YELLOW_APPLE_LEVEL_CUTOFF and initial_pickups == 1:
+          print("spawned peeler.")
+          new_pickup = ApplePeeler.instance()
+        elif Game.current_floor > YELLOW_APPLE_LEVEL_CUTOFF and initial_pickups == 1:
+          print("spawned corer.")
+          new_pickup = AppleCorer.instance()
+        else:
+          new_pickup = PearJuiceBox.instance()
         new_pickup.map = Map
         Map.add_child(new_pickup)
         new_pickup.position = (
@@ -348,6 +385,8 @@ func make_map():
   Map.update_bitmask_region(topleft, bottomright)
   decorate_south_walls()
   for door in door_candidates:
+    if randi() % 100 > 50:
+      pass
     # N, E, S, W
     var neighbors = [
       Map.get_cell(door.x, door.y - 1),
@@ -427,6 +466,9 @@ func make_map():
   )
   Map.add_to_tile(Downstairs, Map.world_to_map(Downstairs.position))
   Map.Downstairs = Downstairs
+  Upstairs.position = Player.position
+  Map.add_to_tile(Upstairs, Map.world_to_map(Upstairs.position))
+  Map.Upstairs = Upstairs
   $Camera.position = Player.position
   Player.load_persistence()
   $"../../UIViewport/UI/".current_player = Player

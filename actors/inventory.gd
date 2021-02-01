@@ -24,9 +24,13 @@ func add(item, you = false):
         if you:
           MessageLog.log("Inventory full. Drop some weapons to clear slots.")
     Constants.ITEM_TYPE.item:
-      pass
+      items.append(item)
+      if you:
+        MessageLog.log("Picked up %s" % [item.label])
     Constants.ITEM_TYPE.apple_piece:
-      pass
+      items.append(item)
+      if you:
+        MessageLog.log("Picked up %s" % [item.label])
     Constants.ITEM_TYPE.consumable:
       items.append(item)
       if you:

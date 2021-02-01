@@ -35,6 +35,16 @@ var GROUPS = {
 
 enum ITEM_TYPE { weapon, item, consumable, apple_piece }
 
+var MESSAGES = {
+  "green_apple_weapon_hint_kill": "You are unable to harvest the Green Apple's slices. Try using a more precise weapon!",
+  "green_apple_weapon_kill_success": "The peeler cuts off a perfect slice of Green Apple!",
+  "yellow_apple_weapon_hint_attack": "The Yellow Apple's skin is very tough!",
+  "yellow_apple_weapon_hint_kill": "You are unable to harvest the Yellow Apple's slices. Try a longer weapon!",
+  "yellow_apple_weapon_kill_success": "The corer leaves behind a perfect slice of Yellow Apple!",
+  "pink_apple_weapon_hint_attack": "Your attack barely hurts the Pink Apple!",
+  "pink_apple_weapon_hint_kill": "You are unable to harvest the Pink Apple's slices. Try a sharper weapon!"
+}
+
 
 func roll_dice(die, count: int):
   var result = 0

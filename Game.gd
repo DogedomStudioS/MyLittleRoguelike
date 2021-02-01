@@ -6,4 +6,5 @@ var current_floor = 1
 var player_carry_over
 var just_launched = true
 var loading_existing_tilemap = false
+var next_level_direction = null
 var existing_level = {}

@@ -1,4 +1,4 @@
-[gd_scene load_steps=51 format=2]
+[gd_scene load_steps=52 format=2]
 
 [ext_resource path="res://level/World.gd" type="Script" id=1]
 [ext_resource path="res://assets/sprites/threshold.png" type="Texture" id=2]
@@ -16,6 +16,7 @@
 [ext_resource path="res://assets/sprites/corridor.png" type="Texture" id=14]
 [ext_resource path="res://assets/tilesets/tileset_color_blocks.png" type="Texture" id=15]
 [ext_resource path="res://assets/tilesets/tileset_color_blocks_corridor.png" type="Texture" id=16]
+[ext_resource path="res://Upstairs.tscn" type="PackedScene" id=17]
 
 [sub_resource type="ConvexPolygonShape2D" id=1]
 points = PoolVector2Array( 0, 0, 32, 0, 32, 32, 0, 32 )
@@ -520,6 +521,8 @@ __meta__ = {
 z_index = 1
 
 [node name="Downstairs" parent="Game/World/Navigation2D/TileMap" instance=ExtResource( 12 )]
+
+[node name="Upstairs" parent="Game/World/Navigation2D/TileMap" instance=ExtResource( 17 )]
 
 [node name="Camera" type="Camera2D" parent="Game/World"]
 current = true

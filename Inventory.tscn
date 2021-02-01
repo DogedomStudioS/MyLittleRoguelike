@@ -96,7 +96,7 @@ align = 1
 [node name="MarginContainer" type="MarginContainer" parent="OuterContainer/InnerContainer/Right"]
 margin_top = 17.0
 margin_right = 247.0
-margin_bottom = 238.0
+margin_bottom = 211.0
 size_flags_vertical = 3
 custom_constants/margin_right = 20
 custom_constants/margin_left = 10
@@ -105,9 +105,27 @@ custom_constants/margin_bottom = 10
 [node name="ItemsList" type="ItemList" parent="OuterContainer/InnerContainer/Right/MarginContainer"]
 margin_left = 10.0
 margin_right = 227.0
-margin_bottom = 211.0
+margin_bottom = 184.0
 custom_fonts/font = ExtResource( 1 )
 allow_rmb_select = true
+
+[node name="MarginContainer2" type="MarginContainer" parent="OuterContainer/InnerContainer/Right"]
+margin_top = 215.0
+margin_right = 247.0
+margin_bottom = 238.0
+custom_constants/margin_right = 10
+custom_constants/margin_top = -4
+custom_constants/margin_left = 10
+custom_constants/margin_bottom = 14
+
+[node name="Label2" type="Label" parent="OuterContainer/InnerContainer/Right/MarginContainer2"]
+margin_left = 10.0
+margin_top = -4.0
+margin_right = 237.0
+margin_bottom = 9.0
+custom_fonts/font = ExtResource( 1 )
+text = "Use: double click. Drop: right click."
+align = 1
 [connection signal="item_selected" from="OuterContainer/InnerContainer/Left/MarginContainer/WeaponsList" to="." method="_on_WeaponsList_item_selected"]
 [connection signal="pressed" from="OuterContainer/InnerContainer/Left/MarginContainer2/Button" to="." method="_on_Button_pressed"]
 [connection signal="item_activated" from="OuterContainer/InnerContainer/Right/MarginContainer/ItemsList" to="." method="_on_ItemsList_item_activated"]

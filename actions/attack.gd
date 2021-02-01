@@ -4,7 +4,7 @@ var host: KinematicBody2D
 onready var tween: Tween = $Tween
 var tween_speed = 16
 var bonus_damage = 0
-var weapon
+var weapon = null
 var unarmed_damage = { "name": "label", "properties": { "die": Constants.DICE.d4, "die_count": 1 }}
 
 func arm_weapon(new_weapon = null, you = false):
@@ -31,7 +31,7 @@ func attack(options, you = false):
       MessageLog.log("You hit the %s." % [target.nice_name])
     else:
       MessageLog.log("The %s hits!" % [host.nice_name])
-    target.mortality.hurt(attack_damage() + bonus_damage)
+    target.mortality.hurt(attack_damage() + bonus_damage, weapon)
     _animate_attack(direction)
   
 func _animate_attack(direction):
