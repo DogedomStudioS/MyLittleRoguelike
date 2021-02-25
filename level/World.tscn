@@ -1,4 +1,4 @@
-[gd_scene load_steps=52 format=2]
+[gd_scene load_steps=53 format=2]
 
 [ext_resource path="res://level/World.gd" type="Script" id=1]
 [ext_resource path="res://assets/sprites/threshold.png" type="Texture" id=2]
@@ -17,6 +17,7 @@
 [ext_resource path="res://assets/tilesets/tileset_color_blocks.png" type="Texture" id=15]
 [ext_resource path="res://assets/tilesets/tileset_color_blocks_corridor.png" type="Texture" id=16]
 [ext_resource path="res://Upstairs.tscn" type="PackedScene" id=17]
+[ext_resource path="res://level/DungeonMapGenerator.gd" type="Script" id=18]
 
 [sub_resource type="ConvexPolygonShape2D" id=1]
 points = PoolVector2Array( 0, 0, 32, 0, 32, 32, 0, 32 )
@@ -495,6 +496,9 @@ script = ExtResource( 3 )
 
 [node name="Rooms" type="Node" parent="Game/World"]
 
+[node name="DungeonMapGenerator" type="Node" parent="Game/World"]
+script = ExtResource( 18 )
+
 [node name="Navigation2D" type="Navigation2D" parent="Game/World"]
 
 [node name="VisibilityMap" type="TileMap" parent="Game/World/Navigation2D"]
@@ -525,6 +529,7 @@ z_index = 1
 [node name="Upstairs" parent="Game/World/Navigation2D/TileMap" instance=ExtResource( 17 )]
 
 [node name="Camera" type="Camera2D" parent="Game/World"]
+position = Vector2( 1300, 650 )
 current = true
 
 [node name="Player Eyes" type="KinematicBody2D" parent="Game/World"]

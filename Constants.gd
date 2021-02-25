@@ -15,6 +15,13 @@ var directions = {
   "up_left": Vector2.UP + Vector2.LEFT
 }
 
+var TILE_TYPES = {
+  "tile_wall": 52,
+  "tile_rooms": 47,
+  "tile_threshold": 50,
+  "tile_corridor": 54
+}
+
 var COLLISION_LAYERS = {
   "SOLID": 1,
   "OBSTACLE": 512,

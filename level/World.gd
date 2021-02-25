@@ -57,6 +57,7 @@ var start_room = null
 var end_room = null
 
 func _ready():
+  Loading.set_visible(false)
   $Input.frozen_input = true
   if Game.just_launched:
     Game.just_launched = false
@@ -69,7 +70,6 @@ func _ready():
   setup_message_log()
   if Game.current_floor == 1:
     MessageLog.log("Welcome to Apples Versus Oranges!")
-
   if Game.loading_existing_tilemap:
     # Load map tiles here
     var level = Game.existing_level
@@ -164,8 +164,83 @@ func _ready():
     Loading.set_visible(false)
     $Input.frozen_input = false
     Game.loading_existing_tilemap = false
+    
   else:
-    make_rooms()
+    $DungeonMapGenerator.generate_map(Map)
+    for room in $DungeonMapGenerator._rooms:
+      room_positions.append(room.position * tile_size)
+      room_sizes.append(room.size * tile_size)
+    for room in range(room_positions.size()):
+      var r = Room.instance()
+      r.make_room(Vector2(int(room_positions[room].x), int(room_positions[room].y)), Vector2(int(room_sizes[room].x), int(room_sizes[room].y)))
+      $Rooms.add_child(r)
+      Map.room_positions.append(Vector2(int(room_positions[room].x), int(room_positions[room].y)))
+      Map.room_sizes.append(Vector2(int(room_sizes[room].x), int(room_sizes[room].y)))
+    Map.topleft = $DungeonMapGenerator._bounds.position
+    Map.bottomright = $DungeonMapGenerator._bounds.size
+    start_room = Rect2(room_positions[0], room_sizes[0])
+    end_room = Rect2(room_positions[room_positions.size() - 1], room_sizes[room_sizes.size() - 1])
+    
+    Player.map = Map
+    var start_position = (start_room.position + Vector2(start_room.size.x / 2, start_room.size.y / 2)).snapped(Vector2.ONE * tile_size) + Vector2(tile_size / 2, tile_size / 2) 
+    var try_position = start_position
+    var positionValid = false
+    var tries = 0
+    while not positionValid: 
+      if not Map.is_location_occupied(Map.world_to_map(try_position)) and not Map.is_location_solid_wall(Map.world_to_map(try_position)):
+        positionValid = true
+        break
+      if tries < 16:
+        if tries % 2 == 0:
+          try_position.x += tile_size
+        else:
+          try_position.y += tile_size
+      elif tries >= 16 and tries < 32:
+        if tries == 16:
+          try_position = start_position
+        if tries % 2 == 0:
+          try_position.x -= tile_size
+        else:
+          try_position.y += tile_size
+      elif tries >= 32 and tries < 48:
+        if tries == 32:
+          try_position = start_position
+        if tries % 2 == 0:
+          try_position.x += tile_size
+        else:
+          try_position.y -= tile_size
+      elif tries >= 48 and tries < 64:
+        if tries == 48:
+          try_position = start_position
+        if tries % 2 == 0:
+          try_position.x -= tile_size
+        else:
+          try_position.y -= tile_size
+      elif tries >= 96:
+        print("WARNING: unable to place player!")
+        positionValid = true
+      tries += 1
+    Player.position = try_position
+    Map.add_to_tile(Player, Map.world_to_map(Player.position))
+    Downstairs.position = (
+      (end_room.position + (Vector2(2, 2) * tile_size))
+      + Vector2(tile_size / 2, tile_size / 2)
+    )
+    Map.add_to_tile(Downstairs, Map.world_to_map(Downstairs.position))
+    Map.Downstairs = Downstairs
+    Upstairs.position = Player.position
+    Map.add_to_tile(Upstairs, Map.world_to_map(Upstairs.position))
+    Map.Upstairs = Upstairs
+    $Camera.position = Player.position
+    Player.load_persistence()
+    $"../../UIViewport/UI/".current_player = Player
+    $"../../UIViewport/UI/".ready = true
+    #for room in $Rooms.get_children():
+    #room.queue_free()
+    Loading.set_visible(false)
+    $Input.frozen_input = false
+    
+    #make_rooms()
 
 
 func orders_handled(game_time):
